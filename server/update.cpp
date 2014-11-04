@@ -192,7 +192,7 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus bonus,
     hrac.silaBomb += 1;
   }
   else if(bonus.typ == BONUS_STIT){
-    hrac.maStit = kStitTrvanie; // pozor, to sa nestackuje
+    hrac.maStit = kStitTrvanie + 1; // pozor, to sa nestackuje (+1 lebo na konci kola sa to odrata)
   }
   else if(bonus.typ == BONUS_POCET){
     hrac.maxPocetBomb += 1;
@@ -329,7 +329,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   // ako to cele funguje:
   // najprv s pozrieme, 
   //    ktore policka maju byt v ohni, 
-  //    ktore bobmy maju vybuchnut, 
+  //    ktore bomby maju vybuchnut, 
   //    ktore policka s hlinou maju zaniknut
   //    ktori hraci maju zomriet (anuluju sa im stity, ak mali)
   // nasledne sa pozrieme, kto za co dostane body
