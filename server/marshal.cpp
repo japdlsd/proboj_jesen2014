@@ -37,6 +37,15 @@ template<> void nacitaj<int>(istream& buf, int& out) {
   buf >> out;
 }
 
+// @TODO opytat sa Tomiho, ci je to fajn
+template<> void uloz<bool>(ostream& buf, const bool& in) {
+  buf << (int)in << '\n';
+}
+
+template<> void nacitaj<bool>(istream& buf, bool& out) {
+  buf >> out;
+}
+
 // uloz() pre vsetky struktury z common.h
 #define reflection(T) template<> void uloz<T>(ostream& out, const T& in) {
 #define member(x) uloz(out, in.x);

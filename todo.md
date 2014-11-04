@@ -1,3 +1,6 @@
+Zakladne veci
+---------------
+
 mapa, hraci, kamene, neznicitelne kamene, bomby, bonusy.
 
 mapa:
@@ -33,3 +36,7 @@ ficurie:
 - zvukove efekty :D
 - obrazky
 
+Nezabudnut
+-----------
+- [ ] modifikovat klienta: teraz nedostava zvlast viditelny teren
+- [ ] @Tomi: serializacia bool'ov : je korektna?

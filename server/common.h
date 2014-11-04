@@ -8,41 +8,35 @@
 
 #define FOREACH(it,c) for (typeof((c).begin()) it = (c).begin(); it != (c).end(); ++it)
 
-
-#define MANIK_BANIK    0
-#define MANIK_SEKAC    1
-#define MANIK_MLATIC   2
-#define MANIK_STRAZNIK 3
-#define MANIK_SKAUT    4
-#define MANIK_STRELEC  5
-#define MANIK_LOVEC    6
-#define MANIK_KUCHAR   7
-#define MANIK_KOVAC    8
-
-#define MANIK_POCET_TYPOV 9
-
-
-#define MAPA_NEVIEM   0
-#define MAPA_OKRAJ    1
-#define MAPA_ZELEZO   2
-#define MAPA_ZLATO    3
-#define MAPA_SUTER    4
-#define MAPA_VOLNO    5
-#define MAPA_PASCA    6
-#define MAPA_START    7
+#define MAPA_OKRAJ        0
+#define MAPA_KAMEN        1
+#define MAPA_HLINA        2
+#define MAPA_BOMBA        3
+#define MAPA_VOLNO        4
+#define MAPA_START        5
+#define MAPA_BONUS        6
 
 #define priechodne(p) ((p) >= MAPA_VOLNO)
 
-
+#define PRIKAZ_NIC 0
 #define PRIKAZ_CHOD 1
-#define PRIKAZ_UTOC 2
-#define PRIKAZ_KUJ 3
-#define PRIKAZ_DAJ_ZLATO 4
-#define PRIKAZ_DAJ_ZELEZO 5
-#define PRIKAZ_DAJ_SPENAT 6
+#define PRIKAZ_POLOZ_BOMBU 2
 
-#define PRIKAZ_POCET_TYPOV 6
+#define PRIKAZ_POCET_TYPOV 3
 
+
+#define BONUS_SILA        0
+#define BONUS_POCET       1
+#define BONUS_STIT        2
+#define BONUS_OHNOSTROJ   3
+#define BONUS_VIANOCE     4
+
+#define BONUS_POCET_TYPOV 5
+
+#define SMER_HORE 0
+#define SMER_VPRAVO 1
+#define SMER_DOLE 2
+#define SMER_VLAVO 3
 
 struct Bod {
   int x, y;
@@ -51,43 +45,56 @@ struct Bod {
   bool operator==(const Bod& b) const { return x == b.x && y == b.y; }
   bool operator!=(const Bod& b) const { return !(x == b.x && y == b.y); }
   bool operator<(const Bod& b) const { return y < b.y || (y == b.y && x < b.x); }
+  Bod operator+(const Bod& b) const {return Bod(this->x + b.x, this->y + b.y); }
 };
 
-
-struct Prikaz {
-  int kto;   // id manika co to ma vykonat
-  int typPrikazu;
-  Bod ciel;
-  int parameter;   // pre DAJ_* je to mnozstvo, pre KUJ je to typ co vyrabam
-  Prikaz() {}
-  Prikaz(int _kto, int _typ, Bod _ciel, int _param = 0)
-      : kto(_kto), typPrikazu(_typ), ciel(_ciel), parameter(_param) {
-  }
-  Prikaz(int _kto, int _typ, int _cx, int _cy, int _param = 0)
-      : kto(_kto), typPrikazu(_typ), ciel(Bod(_cx, _cy)), parameter(_param) {
-  }
-};
-
-
-typedef std::vector<Prikaz> Odpoved;
-
-
-struct Hrac {
-  int skore;
-  std::vector<int> mapovanie;   // klienti nevidia
-};
-
-
-struct Manik {
+struct Bonus {
   int id;
   int x;
   int y;
-  int ktorehoHraca;   // vy ste 0
   int typ;
-  int zlato;
-  int zelezo;
-  int spenat;
-  int kovacEnergia;
+  Bod pozicia() const { return Bod(x, y); }
+};
+
+struct Bomba {
+  int id;
+  int kto; // koho je tato bomba. -1, ak to je ohnostroj
+  int x;
+  int y;
+  int timer; // o kolko kol vybuchne
+  int sila;
+  Bod pozicia() const { return Bod(x, y); }
+};
+
+struct Prikaz {
+  int typPrikazu;
+  int smer; // 0 az 3, podla DX, DY
+  Prikaz() {}
+  Prikaz(int _typ)
+      : typPrikazu(_typ), smer(-1){
+  }
+  Prikaz(int _typ, int _smer)
+      : typPrikazu(_typ), smer(_smer) {
+  }
+};
+
+
+typedef Prikaz Odpoved;
+
+
+struct Hrac {
+  std::vector<int> mapovanie;   // klienti nevidia
+  int skore;
+  int x;
+  int y;
+  bool jeZivy;
+  int pocetBomb; // pocet bomb daneho hraca na mape
+  
+  // veci, suvisiace s bonusmi
+  int maxPocetBomb; // kolko moze mat bomb naraz, meni sa
+  int silaBomb; // sila bomb daneho hraca, meni sa
+  int maStit; // kolko kol este ma stit
+  
   Bod pozicia() const { return Bod(x, y); }
 };
 
@@ -116,8 +123,9 @@ struct Teren {
 
 struct Stav {
   std::vector<Hrac> hraci;
-  std::vector<Manik> manici;   // klienti vidia ciastocne
-  Teren teren;   // klienti nevidia, maju iba viditelnyTeren
+  std::vector<Bonus> bonusy;
+  std::vector<Bomba> bomby;
+  Teren teren;
   int dalsiId;
   int cas;
 };
@@ -127,7 +135,7 @@ struct Mapa {
   int pocetHracov;
   int w;
   int h;
-  Teren pribliznyTeren;   // zlato a zelezo nemaju presne miesta
+  Teren pribliznyTeren;   // bonusy vznikaju priebezne, kamene zanikaju
 };
 
 
@@ -143,28 +151,34 @@ reflection(Bod);
   member(y);
 end();
 
-reflection(Prikaz);
+reflection(Bonus);
+  member(x);
+  member(y);
+  member(typ);
+end();
+
+reflection(Bomba);
   member(kto);
+  member(x);
+  member(y);
+  member(sila);
+  member(timer);
+end();
+
+reflection(Prikaz);
   member(typPrikazu);
-  member(ciel);
-  member(parameter);
+  member(smer);
 end();
 
 reflection(Hrac);
   member(skore);
-  member(mapovanie);
-end();
-
-reflection(Manik);
-  member(id);
   member(x);
   member(y);
-  member(ktorehoHraca);
-  member(typ);
-  member(zlato);
-  member(zelezo);
-  member(spenat);
-  member(kovacEnergia);
+  member(jeZivy);
+  member(pocetBomb);
+  member(maxPocetBomb);
+  member(silaBomb);
+  member(maStit);
 end();
 
 reflection(Teren);
@@ -173,8 +187,9 @@ end();
 
 reflection(Stav);
   member(hraci);
-  member(manici);
-  // teren neserializujeme
+  member(bonusy);
+  member(bomby);
+  member(teren);
   member(dalsiId);
   member(cas);
 end();

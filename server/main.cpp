@@ -116,10 +116,13 @@ int main(int argc, char *argv[]) {
       pZijuci.push_back(&klienti[i]);
       stringstream requestbuf;
       Teren viditelne;
-      zistiCoVidi(stav, i, viditelne);
-      vector<int> zakodovaneViditelne;
-      zakodujViditelnyTeren(viditelne, zakodovaneViditelne);
-      uloz(requestbuf, zakodovaneViditelne);
+      //zistiCoVidi(stav, i, viditelne);
+      //vector<int> zakodovaneViditelne;
+      //zakodujViditelnyTeren(viditelne, zakodovaneViditelne);
+      
+      // @TODO urpavit aj klienta, lebo teraz nedostava viditelny teren
+
+      //uloz(requestbuf, zakodovaneViditelne);
       Stav novy;
       zamaskujStav(mapa, stav, i, viditelne, novy);
       uloz(requestbuf, novy);
@@ -136,7 +139,7 @@ int main(int argc, char *argv[]) {
       int ok = skusNacitatSentinel(responsebuf, '.') && !responsebuf.fail();
       if (!ok) {
         log("nepodarilo sa nacitat odpoved od klienta %d", i);
-        odpovede[i].clear();
+        odpovede[i] = Prikaz();
         klienti[i].restartuj();
       }
     }

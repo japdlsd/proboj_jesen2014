@@ -44,9 +44,8 @@ bool nacitajMapu(Mapa& mapa, string filename, int pocetHracov) {
       int b = fgetc(in);
       if (r == EOF || g == EOF || b == EOF) return chyba("necakany EOF pri citani '%s'\n", filename.c_str());
       if (r == 255 && g == 255 && b == 255) mapa.pribliznyTeren.data[y][x] = MAPA_VOLNO;
-      else if (r == 0 && g == 0 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_SUTER;
-      else if (r == 255 && g == 0 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_ZELEZO;
-      else if (r == 255 && g == 255 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_ZLATO;
+      else if (r == 0 && g == 0 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_KAMEN;
+      else if (r == 255 && g == 0 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_HLINA;
       else if (r == 0 && g == 255 && b == 0) mapa.pribliznyTeren.data[y][x] = MAPA_START;
       else return chyba("zla farba %d,%d,%d na pozicii %d,%d v '%s'\n", r, g, b, x, y, filename.c_str());
     }
