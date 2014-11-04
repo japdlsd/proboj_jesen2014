@@ -30,6 +30,7 @@ bonus:
 - +1 ku max. poctu bomb
 - +1 ku sile bomb (dosahu)
 - ohnostroj == kopa bomb s casmi x, x+1, x+2, x+3
+- vianoce == kopa bonusov po celej mape
 - antibonus - mina, diera, dalsia bomba
 
 ficurie:
@@ -41,3 +42,11 @@ Nezabudnut
 - [ ] modifikovat klienta: teraz nedostava zvlast viditelny teren
 - [ ] @Tomi: serializacia bool'ov : je korektna?
 - [ ] doriesit `update.h` a externovanie konstant
+- [ ] celkovo `klient/main.cpp` : jednodusit, vymysliet protokol posielania odpovede
+- [ ] ### observer
+- [ ] urvat `viditelnyTeren` z kodu
+- [ ] premenovat `pribliznyTeren` na `uvodnyTeren`
+- [ ] lepsie vyzerajuce skore (x100)
+- [ ] body za last standing (povodna pointa Bobmermanu :)  za hlinu 3, za frag 50, za last man standing 400, za samovrazdu -40)
+- [ ] skore nemoze klesnut pod nulu :D
+- [ ] static inline vytvorHraca
