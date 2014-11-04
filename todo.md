@@ -40,3 +40,4 @@ Nezabudnut
 -----------
 - [ ] modifikovat klienta: teraz nedostava zvlast viditelny teren
 - [ ] @Tomi: serializacia bool'ov : je korektna?
+- [ ] doriesit `update.h` a externovanie konstant
