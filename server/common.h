@@ -39,7 +39,7 @@ struct Bod {
   bool operator==(const Bod& b) const { return x == b.x && y == b.y; }
   bool operator!=(const Bod& b) const { return !(x == b.x && y == b.y); }
   bool operator<(const Bod& b) const { return y < b.y || (y == b.y && x < b.x); }
-  Bod operator+(const Bod& b) const {return Bod(this->x + b.x, this->y + b.y); }
+  Bod operator+(const Bod& b) const {return Bod(x + b.x, y + b.y); }
 };
 
 struct Bonus {
