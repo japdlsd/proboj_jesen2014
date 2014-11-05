@@ -89,7 +89,6 @@ Stav zaciatokHry(const Mapa& mapa) {
   }
   random_shuffle(starty.begin(), starty.end());
 
-  stav.teren.vyprazdni(mapa.w, mapa.h, MAPA_KAMEN);
   for (int y = 0; y < mapa.h; y++) for (int x = 0; x < mapa.w; x++) {
     switch (mapa.pribliznyTeren.get(x, y)) {
       case MAPA_VOLNO:
