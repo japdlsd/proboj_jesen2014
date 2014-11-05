@@ -16,6 +16,6 @@ Nezabudnut
 
 TODO from midnight refactoring
 ===============================
-- [ ] rewrite odsimulujKolo
-- [ ] prepisat fazu vybuchovania
+- [x] rewrite odsimulujKolo
+- [x] prepisat fazu vybuchovania
 - [ ] pre kazdu fciu z `update.cpp` rozhodnut ci si zasluzi mat predponu extern
