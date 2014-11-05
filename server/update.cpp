@@ -58,7 +58,7 @@ void zapniObservation(ostream* observation) { g_observation = observation; }
   } while(0)
 
 
-Hrac vytvorHraca(const Mapa &mapa, const Bod &poloha, const int i){
+inline static Hrac vytvorHraca(const Mapa &mapa, const Bod &poloha, const int i){
   Hrac h = Hrac();
   h.x = poloha.x;
   h.y = poloha.y;
