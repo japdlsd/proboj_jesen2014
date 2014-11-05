@@ -460,7 +460,7 @@ void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& vid
   const vector<int>& mapovanie = stav.hraci[hrac].mapovanie;
   novy.hraci.resize(mapa.pocetHracov);
   for (int i = 0; i < mapa.pocetHracov; i++) {
-    novy.hraci[mapovanie[i]].skore = stav.hraci[i].skore;
+    novy.hraci[mapovanie[i]] = stav.hraci[i];
   }
   
   novy.dalsiId = stav.dalsiId;
