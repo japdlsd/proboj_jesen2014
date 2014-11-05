@@ -479,7 +479,7 @@ vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav) {
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
     zijuci.push_back(i);
   }
-  return vector<int>(zijuci.begin(), zijuci.end());
+  return zijuci;
 }
 
 bool hraSkoncila(const Mapa& mapa, const Stav& stav) {
