@@ -462,18 +462,12 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
 
 void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& viditelne, Stav& novy) {
   const vector<int>& mapovanie = stav.hraci[hrac].mapovanie;
+  novy = stav;
   novy.hraci.resize(mapa.pocetHracov);
   for (int i = 0; i < mapa.pocetHracov; i++) {
     novy.hraci[mapovanie[i]] = stav.hraci[i];
   }
-  
-  novy.dalsiId = stav.dalsiId;
-  novy.cas = stav.cas;
-    
-  novy.teren = stav.teren;
-
-  novy.bonusy = stav.bonusy;
-  novy.bomby = stav.bomby;
+  novy.mapovanie.clear();
 }
 
 void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpoved) {
