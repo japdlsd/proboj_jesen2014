@@ -148,6 +148,13 @@ inline bool nieJeTuHrac(const Stav& stav, const Bod& p){
   return true;
 }
 
+inline static int ktoJeNaPolicku(const Stav& stav, const Bod& p){
+  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
+    if(stav.hraci[i].pozicia() == p) return i;
+  }
+  return -1;
+}
+
 Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
   Bomba bomba = Bomba();
   bomba.id = id;
