@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
       stringstream requestbuf;
       
       Stav novy;
-      zamaskujStav(mapa, stav, i, viditelne, novy);
+      zamaskujStav(mapa, stav, i, novy);
       uloz(requestbuf, novy);
       requesty.push_back(requestbuf.str());
     }

@@ -126,7 +126,7 @@ struct Mapa {
   int pocetHracov;
   int w;
   int h;
-  Teren pribliznyTeren;   // bonusy vznikaju priebezne, kamene zanikaju
+  Teren uvodnyTeren;   // bonusy vznikaju priebezne, kamene zanikaju
 };
 
 
@@ -190,7 +190,7 @@ reflection(Mapa);
   member(pocetHracov);
   member(w);
   member(h);
-  member(pribliznyTeren);
+  member(uvodnyTeren);
 end();
 
 #endif

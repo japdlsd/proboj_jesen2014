@@ -141,33 +141,39 @@ void prehladajLokalneBfs(const Teren& teren, const Bod& start, int rozsahLimit, 
   }
 }
 
-inline bool nieJeTuHrac(const Stav& stav, const Bod& p){
+bool nieJeTuHrac(const Stav& stav, const Bod& p){
   for(int i = 0; i < (int)stav.hraci.size(); i++) 
     if(stav.hraci[i].jeZivy && stav.hraci[i].pozicia() == p)
         return false;
   return true;
 }
 
-inline static int ktoJeNaPolicku(const Stav& stav, const Bod& p){
-  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
+int ktoJeNaPolicku(const Stav& stav, const Bod& p){
+  for(int i = 0; i < (int)stav.hraci.size(); i++) if(stav.hraci[i].jeZivy){
     if(stav.hraci[i].pozicia() == p) return i;
   }
   return -1;
 }
 
-Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
+inline static Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
+  // prepokladas, ze to pouzijes pred odpocitavanim timerov, teda timer je o jedna vacsi
   Bomba bomba = Bomba();
   bomba.id = id;
   bomba.kto = kto;
   bomba.sila = sila;
-  bomba.timer = timer;
+  bomba.timer = timer + 1;
   bomba.x = poloha.x;
   bomba.y = poloha.y;
 
   return bomba;
 }
 
-Bonus vytvorBonus(const int id, const Bod& poloha){
+inline static Bomba vytvorBombu(Stav& stav, const int i){
+  Hrac& hrac = stav.hraci[i];
+  return vytvorBombu(stav.dalsiId++, i, hrac.silaBomb, kBombaTimer, hrac.pozicia());
+}
+
+inline static Bonus vytvorBonus(const int id, const Bod& poloha){
   Bonus bonus = Bonus();
   bonus.id = id;
   bonus.x = poloha.x;
@@ -187,7 +193,7 @@ Bonus vytvorBonus(const int id, const Bod& poloha){
   return bonus;
 }
 
-void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus, 
+inline static void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus, 
     map<Bod, Bonus>& bonusyPodlaPolohy, map<Bod, Bomba>& bombyPodlaPolohy){
   if(bonus.typ == BONUS_SILA){
     hrac.silaBomb += 1;
@@ -209,7 +215,7 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
 
       if(stav.teren.get(x, y) == MAPA_VOLNO){ // ano, moze vzniknut aj u hraca pod nohami
         stav.teren.set(x, y, MAPA_BOMBA);
-        bombyPodlaPolohy[Bod(x, y)] = vytvorBombu(stav.dalsiId++, kOhnostrojID, kOhnostrojSila, 
+        bombyPodlaPolohy[Bod(x, y)] = vytvorBombu(stav.dalsiId++, kOhnostrojKto, kOhnostrojSila, 
             kOhnostrojStart + (kOhnostrojPocet - ostavaBomb) + 1, Bod(x, y));
         ostavaBomb--;
       }
@@ -238,14 +244,14 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
   }
 }
 
-inline static int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
+int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
   for(int i = 0; i < (int)stav.hraci.size(); i++){
     if(stav.hraci[i].jeZivy && stav.hraci[i].pozicia() == poloha) return i;
   }
   return -1;
 }
 
-inline static bool jeTuHrac(STav& stav, const Bod& p){
+bool jeTuHrac(Stav& stav, const Bod& p){
   return cisloHracaPodlaPolohy(stav, p) > -1;
 }
 
@@ -276,56 +282,48 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   for(int i = 0; i < mapa.pocetHracov; i++) priorita[i] = i;
   random_shuffle(priorita.begin(), priorita.end());
   
+  // polozia bomby
   for(int _prior = 0; _prior < mapa.pocetHracov; _prior++){
     const int i = priorita[_prior];
-   
-    // @TODO opytat sa Tomiho, ako to vlastne funguje
     // mrtvi netahaju
-    if(! stav.hraci[i].jeZivy){
-      continue;
-    }
+    if(! stav.hraci[i].jeZivy) continue;
   
     Hrac &hrac = stav.hraci[i];
-    const Prikaz prikaz = akcie[i];
+    const Prikaz& prikaz = akcie[i];
 
-    if(prikaz.typPrikazu == PRIKAZ_CHOD){
-      // zly smer
-      if( !(0 <= prikaz.smer && prikaz.smer <= 3)){
-        continue;
-      }
-
-      const Bod ciel = hrac.pozicia() + Bod(DX[prikaz.smer], DY[prikaz.smer]);
-
-      if(priechodne(stav.teren.get(ciel)) && !jeTuHrac(stav, ciel)){
-        hrac.x = ciel.x;
-        hrac.y = ciel.y;
-
-        if(stav.teren.get(ciel) == MAPA_BONUS){
-          const Bonus bonus = bonusyPodlaPolohy[ciel];
-          // @TODO odstranit bonus  
-          stav.teren.set(ciel, MAPA_VOLNO);
-          bonusyPodlaPolohy.erase(ciel);
-          
-          aktivujBonus(stav, hrac, bonus, bonusyPodlaPolohy, bombyPodlaPolohy);
-        }
-      }
-    }
-    else if(prikaz.typPrikazu == PRIKAZ_POLOZ_BOMBU){
-      // uz tam jedna bobma je
-      if(stav.teren.get(hrac.pozicia()) == MAPA_BOMBA){
-        continue;
-      }
-      // uz vycerpal limit
-      if(hrac.pocetBomb == hrac.maxPocetBomb){
-        continue;
-      }
-      
-      bombyPodlaPolohy[hrac.pozicia()] = vytvorBombu(stav.dalsiId++, i, hrac.silaBomb, kBombaTimer + 1, hrac.pozicia());
+    if(prikaz.kladiem && hrac.pocetBomb < hrac.maxPocetBomb && stav.teren.get(hrac.pozicia()) == MAPA_VOLNO){
       stav.teren.set(hrac.pozicia(), MAPA_BOMBA);
-      hrac.pocetBomb++;
+      bombyPodlaPolohy[hrac.pozicia()] = vytvorBombu(stav, i);
     }
   }
-  
+
+  // tahaju hraci
+  for(int _prior = 0; _prior < mapa.pocetHracov; _prior++){
+    const int i = priorita[_prior];
+    // mrtvi netahaju
+    if(! stav.hraci[i].jeZivy) continue;
+
+    Hrac& hrac = stav.hraci[i];
+    const Prikaz& prikaz = akcie[i];
+
+    if(prikaz.smer == SMER_NIKAM) continue;
+    if(! (0 <= prikaz.smer && prikaz.smer <= 3)) continue; // zly smer
+    
+    const Bod kam = hrac.pozicia() + Bod(DX[prikaz.smer], DY[prikaz.smer]);
+    if(! priechodne(stav.teren.get(kam))) continue; // policko nie je prechodne
+    if(jeTuHrac(stav, kam)) continue; // na danom policku je iny hrac
+
+    // no, konecne mozeme ist
+    hrac.x = kam.x;
+    hrac.y = kam.y;
+    
+    if(bonusyPodlaPolohy.find(kam) != bonusyPodlaPolohy.end()){
+      Bonus bonus = bonusyPodlaPolohy[kam];
+      bonusyPodlaPolohy.erase(kam);
+      aktivujBonus(stav, hrac, bonus, bonusyPodlaPolohy, bombyPodlaPolohy);
+    }
+  }
+
   // idu vybuchovat bomby
   // =======================
 
@@ -342,97 +340,89 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   // nasledne zomru hraci
   // nasledne zaniknu policka s hlinou, vygeneruju sa bonusy
   // nasledne sa odprataju vybuchnute bomby, znizia sa patricne countery u hracov
-
-  set<Bod> polohyBombCoVybuchnu;
-  set<Bod> polohyHlinCoVybuchnu;
-  set<int> cislaHracovCoSuVOhni; // iba ti, co nemaju stit
-  set<Bod> polickaVOhni;
   
-  // vsetko, co pushujeme do Q, su validne policka
-  queue<Bod> Q; // policka v ohni
+  queue<Bod> Q; // tam su iba bomby
   FOREACH(it, bombyPodlaPolohy) if(it->second.timer == 0){
     Q.push(it->first);
   }
-
-  while(!Q.empty()){
+  
+  set<Bod> polickaVOhni; // vsetko, co ma horiet
+  map<Bod, vector<int> > hlinyCoMajuHoriet; // a indexy hracov, bomby ktorych ich zasahuju, aj viackrat
+  map<int, vector<int> > hraciCoMajuHoriet;
+  set<Bod> polohyBombCoVybuchnu;
+  
+  while(! Q.empty()){
     const Bod poloha = Q.front(); Q.pop();
-    
-    if(polickaVOhni.find(poloha) != polickaVOhni.end()) continue;
+    if(polohyBombCoVybuchnu.find(poloha) != polohyBombCoVybuchnu.end()) continue;
+    polohyBombCoVybuchnu.insert(poloha);
+    Bomba bomba = bombyPodlaPolohy[poloha];
 
-    const int typ = stav.teren.get(poloha);
-    
-    if(typ == MAPA_VOLNO || typ == MAPA_BONUS){
-      polickaVOhni.insert(poloha);
+    {
+      const int obet = cisloHracaPodlaPolohy(stav, poloha);
+      if(obet > -1){
+        hraciCoMajuHoriet[obet].push_back(bomba.kto);
+      }
     }
-    else if(typ == MAPA_HLINA){
-      polohyHlinCoVybuchnu.insert(poloha);
-    }
-    else if(typ == MAPA_BOMBA){
-      polohyBombCoVybuchnu.insert(poloha);
-      polickaVOhni.insert(poloha);
-      
-      Bomba bomba = bombyPodlaPolohy[poloha];
-    
-      // bombovy "krizik"
-      for(int k = 0; k < 4; k++){
-        Bod bod = poloha;
-        for(int r = 1; r < bomba.sila; r++){
-          bod = bod + Bod(DX[k], DY[k]);
 
-          if(stav.teren.get(bod) == MAPA_KAMEN) break;
-          if(stav.teren.get(bod) == MAPA_OKRAJ) break;
-          if(stav.teren.get(bod) == MAPA_HLINA){
-            // tu sa zarataju body za hlinu
-            if(bomba.kto >= 0){
-              // je to hracova bobma
-              stav.hraci[bomba.kto].skore += kBodyZaHlinu;
-            }
-            
-            Q.push(bod);
-            break;
-          }
+    for(int smer = 0; smer < 4; smer++){
+      for(int r = 1; r < bomba.sila; r++){
+        const Bod p = poloha + Bod(DX[smer] * r, DY[smer] * r);
+        const int typ = stav.teren.get(p);
         
-          {// body za hracov
-            int obet = cisloHracaPodlaPolohy(stav, bod);  
-            if(obet >= 0 && stav.hraci[obet].maStit > 0) obet = -1; // ti, co maju stit, su nezranitelni
-            if(obet >= 0){
-              if(obet != bomba.kto){
-                stav.hraci[bomba.kto].skore += kBodyZaZabitie;
-              }
-              else{
-                stav.hraci[bomba.kto].skore += kBodyZaSamovrazdu;
-              }
-            }
-          }
+        const int obet = cisloHracaPodlaPolohy(stav, p);
+        if(obet > -1) hraciCoMajuHoriet[obet].push_back(bomba.kto);
 
-          Q.push(bod);
+        if(priechodne(typ)){
+          polickaVOhni.insert(p);
+        }
+        else if(typ == MAPA_KAMEN || typ == MAPA_OKRAJ){
+          break;
+        }
+        else if(typ == MAPA_HLINA){
+          polickaVOhni.insert(p);
+          hlinyCoMajuHoriet[p].push_back(bomba.kto);
+          break;
+        }
+        else if(typ == MAPA_BOMBA){
+          polickaVOhni.insert(p);
+          Q.push(p);
         }
       }
     }
   }
-  
-  for(int i = 0; i < mapa.pocetHracov; i++) if(polickaVOhni.find(stav.hraci[i].pozicia()) != polickaVOhni.end()){
-    if(! stav.hraci[i].maStit) cislaHracovCoSuVOhni.insert(i);
-    else stav.hraci[i].maStit = 0;
-  }
-  
-  // upratovanie
-  FOREACH(it, cislaHracovCoSuVOhni){
-    stav.hraci[*it].jeZivy = false;
-  }
 
-  FOREACH(it, polohyHlinCoVybuchnu){
-    stav.teren.set(*it, MAPA_VOLNO);
-
-    if(rand()%100 >= kBonusZakladnaSanca){
-      stav.teren.set(*it, MAPA_BONUS);
-      bonusyPodlaPolohy[*it] = vytvorBonus(stav.dalsiId++, *it);
+  // bodovanie + upratovanie
+  FOREACH(it, hlinyCoMajuHoriet){
+    FOREACH(itt, it->second) if(*itt > -1){
+      stav.hraci[*itt].skore += kBodyZaHlinu;
     }
+    stav.teren.set(it->first, MAPA_VOLNO);
+    
+    // vygenerujeme bonus
+    if(rand()%100 < kBonusZakladnaSanca){
+      stav.teren.set(it->first, MAPA_BONUS);
+      bonusyPodlaPolohy[it->first] = vytvorBonus(stav.dalsiId++, it->first);
+    }
+  }
+
+  FOREACH(it, hraciCoMajuHoriet){
+    if(stav.hraci[it->first].maStit > 0){
+      stav.hraci[it->first].maStit = 0;
+      continue;
+    }
+    FOREACH(itt, it->second) if(*itt > -1){
+      if(it->first != *itt) stav.hraci[*itt].skore += kBodyZaZabitie;
+      else  stav.hraci[*itt].skore -= kBodyZaSamovrazdu;
+    }
+    stav.hraci[it->first].jeZivy = false;
   }
 
   FOREACH(it, polohyBombCoVybuchnu){
     Bomba bomba = bombyPodlaPolohy[*it];
-    if(bomba.kto >= 0) stav.hraci[bomba.kto].pocetBomb--;
+    if(bomba.kto > -1){
+      stav.hraci[bomba.kto].pocetBomb--;
+    }
+    stav.teren.set(*it, MAPA_VOLNO);
     bombyPodlaPolohy.erase(*it);
   }
   
@@ -460,14 +450,16 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   stav.cas++;
 }
 
-void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& viditelne, Stav& novy) {
+void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, Stav& novy) {
   const vector<int>& mapovanie = stav.hraci[hrac].mapovanie;
   novy = stav;
   novy.hraci.resize(mapa.pocetHracov);
   for (int i = 0; i < mapa.pocetHracov; i++) {
     novy.hraci[mapovanie[i]] = stav.hraci[i];
   }
-  novy.mapovanie.clear();
+  for(int i = 0; i < mapa.pocetHracov; i++){
+    novy.hraci[i].mapovanie.clear();
+  }
 }
 
 void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpoved) {
