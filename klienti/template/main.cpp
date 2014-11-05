@@ -13,8 +13,6 @@ using namespace std;
 
 Mapa mapa;
 Stav stav;   // vzdy som hrac cislo 0
-Teren viditelnyTeren;
-vector<Prikaz> prikazy;
 
 
 // main() zavola tuto funkciu, ked nacita mapu
@@ -25,8 +23,9 @@ void inicializuj() {
 
 // main() zavola tuto funkciu, ked chce vediet, ake prikazy chceme vykonat,
 // co tato funkcia rozhodne pomocou: prikazy.push_back(Prikaz(...));
-void zistiTah() {
+Prikaz zistiTah() {
   // (sem patri vas kod)
+  return Prikaz(PRIKAZ_NIC);
 }
 
 
@@ -41,13 +40,8 @@ int main() {
   inicializuj();
 
   while (cin.good()) {
-    vector<int> zakodovanyTeren;
-    nacitaj(cin, zakodovanyTeren);
-    dekodujViditelnyTeren(zakodovanyTeren, viditelnyTeren);
     nacitaj(cin, stav);
-    prikazy.clear();
-    zistiTah();
-    uloz(cout, prikazy);
+    uloz(cout, zistiTah());
     cout << ".\n" << flush;   // bodka a flush = koniec odpovede
   }
 
