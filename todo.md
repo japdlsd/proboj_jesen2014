@@ -50,3 +50,4 @@ Nezabudnut
 - [ ] body za last standing (povodna pointa Bobmermanu :)  za hlinu 3, za frag 50, za last man standing 400, za samovrazdu -40)
 - [ ] skore nemoze klesnut pod nulu :D
 - [ ] static inline vytvorHraca
+- [ ] aftetwards: delete `prvy_review.pdf` :D 
