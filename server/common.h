@@ -18,13 +18,6 @@
 
 #define priechodne(p) ((p) >= MAPA_VOLNO)
 
-#define PRIKAZ_NIC 0
-#define PRIKAZ_CHOD 1
-#define PRIKAZ_POLOZ_BOMBU 2
-
-#define PRIKAZ_POCET_TYPOV 3
-
-
 #define BONUS_SILA        0
 #define BONUS_POCET       1
 #define BONUS_STIT        2
@@ -68,14 +61,11 @@ struct Bomba {
 };
 
 struct Prikaz {
-  int typPrikazu;
-  int smer; // 0 az 3, podla DX, DY
-  Prikaz() {}
-  Prikaz(int _typ)
-      : typPrikazu(_typ), smer(-1){
-  }
-  Prikaz(int _typ, int _smer)
-      : typPrikazu(_typ), smer(_smer) {
+  int smer; // -1 az 3, podla DX, DY
+  bool kladiem;
+  Prikaz() : smer(SMER_NIKAM), kladiem(false){}
+  Prikaz(int _smer, bool _kladiem)
+      : smer(_smer), kladiem(_kladiem) {
   }
 };
 
@@ -167,8 +157,8 @@ reflection(Bomba);
 end();
 
 reflection(Prikaz);
-  member(typPrikazu);
   member(smer);
+  member(kladiem);
 end();
 
 reflection(Hrac);
