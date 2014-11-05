@@ -33,6 +33,7 @@
 
 #define BONUS_POCET_TYPOV 5
 
+#define SMER_NIKAM -1
 #define SMER_HORE 0
 #define SMER_VPRAVO 1
 #define SMER_DOLE 2
