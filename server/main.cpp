@@ -115,14 +115,7 @@ int main(int argc, char *argv[]) {
       int i = zijuci[z];
       pZijuci.push_back(&klienti[i]);
       stringstream requestbuf;
-      Teren viditelne;
-      //zistiCoVidi(stav, i, viditelne);
-      //vector<int> zakodovaneViditelne;
-      //zakodujViditelnyTeren(viditelne, zakodovaneViditelne);
       
-      // @TODO urpavit aj klienta, lebo teraz nedostava viditelny teren
-
-      //uloz(requestbuf, zakodovaneViditelne);
       Stav novy;
       zamaskujStav(mapa, stav, i, viditelne, novy);
       uloz(requestbuf, novy);

@@ -237,7 +237,6 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus bonus,
   }
 }
 
-
 int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
   for(int i = 0; i < (int)stav.hraci.size(); i++){
     if(stav.hraci[i].jeZivy && stav.hraci[i].pozicia() == poloha) return i;
@@ -245,7 +244,6 @@ int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
   return -1;
 }
 
-// @TODO
 void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   OBSERVE("odsimulujKolo.zacina", stav.cas, stav.cas + 1);
    
@@ -460,7 +458,6 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
 
 void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& viditelne, Stav& novy) {
   const vector<int>& mapovanie = stav.hraci[hrac].mapovanie;
-
   novy.hraci.resize(mapa.pocetHracov);
   for (int i = 0; i < mapa.pocetHracov; i++) {
     novy.hraci[mapovanie[i]].skore = stav.hraci[i].skore;
@@ -470,13 +467,14 @@ void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& vid
   novy.cas = stav.cas;
     
   novy.teren = stav.teren;
-}
 
+  novy.bonusy = stav.bonusy;
+  novy.bomby = stav.bomby;
+}
 
 void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpoved) {
   // this function intentionally left blank
 }
-
 
 vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav) {
   vector<int> zijuci;
@@ -486,7 +484,6 @@ vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav) {
   return vector<int>(zijuci.begin(), zijuci.end());
 }
 
-
 bool hraSkoncila(const Mapa& mapa, const Stav& stav) {
   int pocetZivychHracov = 0;
 
@@ -494,7 +491,6 @@ bool hraSkoncila(const Mapa& mapa, const Stav& stav) {
 
   return pocetZivychHracov <= 1 || stav.cas >= kMaximalnaDlzkaHry;
 }
-
 
 int zistiSkore(const Stav& stav, int hrac) {
   return stav.hraci[hrac].skore;
