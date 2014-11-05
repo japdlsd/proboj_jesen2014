@@ -12,6 +12,31 @@ extern const int DY[4];
 
 extern const int kMaximalnaDlzkaHry;
 
+extern const int kPociatocnaSilaBomb; // je to polomer (ak si vzdialeny r policok, tak si v bezpeci)
+extern const int kPociatocnyMaxPocetBomb;
+
+extern const int kBonusSanca[BONUS_POCET_TYPOV];
+
+extern const int kBonusZakladnaSanca;
+
+extern const int kBombaTimer;
+
+extern const int kStitTrvanie; 
+
+extern const int kOhnostrojKto;
+extern const int kOhnostrojPocet;
+extern const int kOhnostrojStart;
+extern const int kOhnostrojSila;
+extern const int kOhnostrojPocetPokusov;
+
+extern const int kVianocePocet;
+extern const int kVianocePocetPokusov;
+
+
+extern const int kBodyZaHlinu;
+extern const int kBodyZaZabitie;
+extern const int kBodyZaSamovrazdu;
+extern const int kBodyZaPrezitie;
 
 void zapniObservation(std::ostream* observation);
 

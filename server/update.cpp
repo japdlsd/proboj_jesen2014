@@ -21,8 +21,6 @@ const int kPociatocnyMaxPocetBomb = 1;
 
 const int kBonusSanca[BONUS_POCET_TYPOV] = 
     {30, 30, 20, 10, 10}; // (percenta) urcuje aky typ bonusu padne, ak padne
-const int kBonusSancaIntervaly[BONUS_POCET_TYPOV][2] = 
-    {{0, 30}, {30, 60}, {60, 80}, {80, 90}, {90, 100}};
 
 const int kBonusZakladnaSanca = 50; // (percenta) sanca, ze bude nejaky bonus
 
@@ -30,7 +28,7 @@ const int kBombaTimer = 10;
 
 const int kStitTrvanie = 20; // pocet kol
 
-const int kOhnostrojID = -1;
+const int kOhnostrojKto = -1;
 const int kOhnostrojPocet = 6;
 const int kOhnostrojStart = 15;
 const int kOhnostrojSila = 3;
@@ -43,6 +41,7 @@ const int kVianocePocetPokusov = 10;
 const int kBodyZaHlinu = 3;
 const int kBodyZaZabitie = 50;
 const int kBodyZaSamovrazdu = -40;
+const int kBodyZaPrezitie = 400;
 
 static ostream* g_observation;
 void zapniObservation(ostream* observation) { g_observation = observation; }
