@@ -51,3 +51,6 @@ Nezabudnut
 - [ ] skore nemoze klesnut pod nulu :D
 - [ ] static inline vytvorHraca
 - [ ] aftetwards: delete `prvy_review.pdf` :D 
+
+
+- [ ] rewrite odsimulujKolo
