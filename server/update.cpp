@@ -207,8 +207,8 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
       const int x = rand() % stav.teren.w();
       const int y = rand() % stav.teren.h();
 
-      if(stav.teren.get(Bod(x, y)) == MAPA_VOLNO){ // ano, moze vzniknut aj u hraca pod nohami
-        stav.teren.set(Bod(x, y), MAPA_BOMBA);
+      if(stav.teren.get(x, y) == MAPA_VOLNO){ // ano, moze vzniknut aj u hraca pod nohami
+        stav.teren.set(x, y, MAPA_BOMBA);
         bombyPodlaPolohy[Bod(x, y)] = vytvorBombu(stav.dalsiId++, kOhnostrojID, kOhnostrojSila, 
             kOhnostrojStart + (kOhnostrojPocet - ostavaBomb) + 1, Bod(x, y));
         ostavaBomb--;
