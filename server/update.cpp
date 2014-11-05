@@ -225,7 +225,7 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
       const int x = rand() % stav.teren.w();
       const int y = rand() % stav.teren.h();
 
-      if(stav.teren.get(Bod(x, y)) == MAPA_VOLNO && nieJeTuHrac(stav, Bod(x, y))){
+      if(stav.teren.get(Bod(x, y)) == MAPA_VOLNO && !jeTuHrac(stav, Bod(x, y))){
         Bonus bonus = vytvorBonus(stav.dalsiId++, Bod(x, y));
 
         if(bonus.typ == BONUS_VIANOCE) continue;
@@ -238,11 +238,15 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
   }
 }
 
-int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
+inline static int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
   for(int i = 0; i < (int)stav.hraci.size(); i++){
     if(stav.hraci[i].jeZivy && stav.hraci[i].pozicia() == poloha) return i;
   }
   return -1;
+}
+
+inline static bool jeTuHrac(STav& stav, const Bod& p){
+  return cisloHracaPodlaPolohy(stav, p) > -1;
 }
 
 void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
@@ -292,7 +296,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
 
       const Bod ciel = hrac.pozicia() + Bod(DX[prikaz.smer], DY[prikaz.smer]);
 
-      if(priechodne(stav.teren.get(ciel)) && nieJeTuHrac(stav, ciel)){
+      if(priechodne(stav.teren.get(ciel)) && !jeTuHrac(stav, ciel)){
         hrac.x = ciel.x;
         hrac.y = ciel.y;
 
