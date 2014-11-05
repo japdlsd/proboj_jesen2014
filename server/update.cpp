@@ -105,7 +105,7 @@ Stav zaciatokHry(const Mapa& mapa) {
   return stav;
 }
 
-void prehladajBfs(const Teren& teren, Bod start, Teren& vzdialenost) {
+void prehladajBfs(const Teren& teren, const Bod& start, Teren& vzdialenost) {
   int inf = teren.w() * teren.h() * 2;
   vzdialenost.vyprazdni(teren.w(), teren.h(), inf);
   queue<Bod> Q;
@@ -123,7 +123,7 @@ void prehladajBfs(const Teren& teren, Bod start, Teren& vzdialenost) {
   }
 }
 
-void prehladajLokalneBfs(const Teren& teren, Bod start, int rozsahLimit, map<Bod,int>& vzdialenost) {
+void prehladajLokalneBfs(const Teren& teren, const Bod& start, int rozsahLimit, map<Bod,int>& vzdialenost) {
   vzdialenost.clear();
   queue<Bod> Q;
   vzdialenost[start] = 0;
@@ -173,18 +173,21 @@ Bonus vytvorBonus(const int id, const Bod& poloha){
   bonus.x = poloha.x;
   bonus.y = poloha.y;
   
-  const int pokus = rand() % 100;
+  int pokus = rand() % 100;
   for(int i = 0; i < BONUS_POCET_TYPOV; i++){
-    if(kBonusSancaIntervaly[i][0] <= pokus && pokus < kBonusSancaIntervaly[i][1]){
+    if(pokus < kBonusSanca[i]){
       bonus.typ = i;
       break;
+    }
+    else{
+      pokus -= kBonusSanca[i];
     }
   }
 
   return bonus;
 }
 
-void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus bonus, 
+void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus, 
     map<Bod, Bonus>& bonusyPodlaPolohy, map<Bod, Bomba>& bombyPodlaPolohy){
   if(bonus.typ == BONUS_SILA){
     hrac.silaBomb += 1;
