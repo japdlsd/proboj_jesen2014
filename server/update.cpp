@@ -476,7 +476,7 @@ void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpo
 
 vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav) {
   vector<int> zijuci;
-  for(int i = 0; i < (int)stav.hraci.size(); i++) if(stav.hraci[i].jeZivy){
+  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
     zijuci.push_back(i);
   }
   return vector<int>(zijuci.begin(), zijuci.end());
