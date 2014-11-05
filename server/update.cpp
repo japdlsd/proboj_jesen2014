@@ -455,7 +455,6 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   stav.cas++;
 }
 
-
 void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, const Teren& viditelne, Stav& novy) {
   const vector<int>& mapovanie = stav.hraci[hrac].mapovanie;
   novy.hraci.resize(mapa.pocetHracov);
