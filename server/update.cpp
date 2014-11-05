@@ -83,24 +83,17 @@ Stav zaciatokHry(const Mapa& mapa) {
 
   vector<Bod> starty;
   for (int y = 0; y < mapa.h; y++) for (int x = 0; x < mapa.w; x++) {
-    if (mapa.pribliznyTeren.get(x, y) == MAPA_START) {
+    if (mapa.uvodnyTeren.get(x, y) == MAPA_START) {
       starty.push_back(Bod(x, y));
     }
   }
   random_shuffle(starty.begin(), starty.end());
+  
+  stav.teren = mapa.uvodnyTeren;
 
   for (int y = 0; y < mapa.h; y++) for (int x = 0; x < mapa.w; x++) {
-    switch (mapa.pribliznyTeren.get(x, y)) {
-      case MAPA_VOLNO:
-      case MAPA_START:
-        stav.teren.set(x, y, MAPA_VOLNO);
-        break;
-      case MAPA_KAMEN:
-        stav.teren.set(x, y, MAPA_KAMEN);
-        break;
-      case MAPA_HLINA:
-        stav.teren.set(x, y, MAPA_HLINA);
-        break;
+    if(mapa.uvodnyTeren.get(x, y) == MAPA_START) {
+      stav.teren.set(x, y, MAPA_VOLNO);
     }
   }
 
