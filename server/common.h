@@ -163,6 +163,7 @@ end();
 
 reflection(Hrac);
   member(skore);
+  member(mapovanie);
   member(x);
   member(y);
   member(jeZivy);
