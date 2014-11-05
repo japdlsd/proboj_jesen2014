@@ -25,7 +25,7 @@ void inicializuj() {
 // co tato funkcia rozhodne pomocou: prikazy.push_back(Prikaz(...));
 Prikaz zistiTah() {
   // (sem patri vas kod)
-  return Prikaz(PRIKAZ_NIC);
+  return Prikaz();
 }
 
 
