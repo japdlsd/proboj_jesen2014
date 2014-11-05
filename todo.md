@@ -54,3 +54,5 @@ Nezabudnut
 
 
 - [ ] rewrite odsimulujKolo
+- [ ] prepisat fazu vybuchovania
+- [ ] pre kazdu fciu z `update.cpp` rozhodnut ci si zasluzi mat predponu extern
