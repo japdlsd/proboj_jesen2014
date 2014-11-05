@@ -294,6 +294,8 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     if(prikaz.kladiem && hrac.pocetBomb < hrac.maxPocetBomb && stav.teren.get(hrac.pozicia()) == MAPA_VOLNO){
       stav.teren.set(hrac.pozicia(), MAPA_BOMBA);
       bombyPodlaPolohy[hrac.pozicia()] = vytvorBombu(stav, i);
+      hrac.pocetBomb++;
+      OBSERVE("Hrac kladie bobmu na policko", i, hrac.x, hrac.y);
     }
   }
 
@@ -316,6 +318,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     // no, konecne mozeme ist
     hrac.x = kam.x;
     hrac.y = kam.y;
+    OBSERVE("Hrac sa poholo na policko", i, hrac.x, hrac.y);
     
     if(bonusyPodlaPolohy.find(kam) != bonusyPodlaPolohy.end()){
       Bonus bonus = bonusyPodlaPolohy[kam];
@@ -414,6 +417,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
       if(it->first != *itt) stav.hraci[*itt].skore += kBodyZaZabitie;
       else  stav.hraci[*itt].skore -= kBodyZaSamovrazdu;
     }
+    OBSERVE("Hrac zomrel", stav.hraci[it->first].x, stav.hraci[it->first].y);
     stav.hraci[it->first].jeZivy = false;
   }
 
@@ -480,6 +484,19 @@ bool hraSkoncila(const Mapa& mapa, const Stav& stav) {
   FOREACH(it, stav.hraci) if(it->jeZivy) pocetZivychHracov++;
 
   return pocetZivychHracov <= 1 || stav.cas >= kMaximalnaDlzkaHry;
+}
+
+void zaverecneVyhodnotenie(const Mapa& mapa, Stav& stav){
+  // ak ostal iba jeden, tak mu dat bodiky
+  // nemozu mat zaporny pocet bodov
+  vector<int> zijuci = ktoriZiju(mapa, stav);
+  if((int)zijuci.size() == 1){
+    stav.hraci[zijuci[0]].skore += kBodyZaPrezitie;
+  }
+
+  for(int i = 0; i < mapa.pocetHracov; i++){
+    stav.hraci[i].skore = max(stav.hraci[i].skore, 0);
+  }
 }
 
 int zistiSkore(const Stav& stav, int hrac) {

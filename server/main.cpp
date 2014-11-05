@@ -37,7 +37,6 @@ template<class T> void checkOstream(T& s, string filename) {
   }
 }
 
-
 int main(int argc, char *argv[]) {
   unsigned int seed = time(NULL) * getpid();
   srand(seed);
@@ -51,6 +50,7 @@ int main(int argc, char *argv[]) {
   log("startujem server, seed je %u", seed);
 
   inicializujSignaly(zabiKlientov);
+ 
 
   string zaznamovyAdresar(argv[1]);
   string mapovySubor(argv[2]);
@@ -150,7 +150,10 @@ int main(int argc, char *argv[]) {
 
   zabiKlientov();
 
+  zaverecneVyhodnotenie(mapa, stav);
+  
   vector<int> vysledky(klienti.size());
+
   for (unsigned i = 0; i < klienti.size(); i++) {
     vysledky[i] = zistiSkore(stav, i);
   }
