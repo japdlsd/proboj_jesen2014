@@ -16,14 +16,14 @@ using namespace std;
 #include "marshal.h"
 #include "util.h"
 
-#define DEFAULT_SCALE 5
+#define DEFAULT_SCALE 20
 #define FINAL_DELAY 20
 
 
 static int scale;
 static int formatVersion;
 static Mapa mapa;
-static vector<vector<map<int,int> > > teren;
+//static vector<vector<map<int,int> > > teren;
 static vector<Stav> stavy;
 static vector<pair<string,vector<int> > > observations;
 static vector<string> titles;
@@ -85,6 +85,8 @@ void nacitajMedia() {
     fprintf(stderr, "mapSurface ma zly pitch\n");
     exit(1);
   }
+
+  // @TODO nacitaj obrazky. niekedy.
 }
 
 
@@ -117,8 +119,8 @@ void nacitajAdresar(string zaznamovyAdresar) {
   mapastream.close();
 
   ifstream logstream((zaznamovyAdresar+"/log").c_str());
-  Teren startovnyTeren;
-  nacitaj(logstream, startovnyTeren);
+  //Teren startovnyTeren;
+  //nacitaj(logstream, startovnyTeren);
   stavy.resize(1);
   nacitaj(logstream, stavy[0]);
   checkStream(logstream, zaznamovyAdresar+"/log");
@@ -151,7 +153,8 @@ void nacitajAdresar(string zaznamovyAdresar) {
   }
   titlestream.close();
 
-  int cas = 1;
+  // int cas = 1;
+  /*
   teren.resize(mapa.h);
   for (int y = 0; y < mapa.h; y++) for (int x = 0; x < mapa.w; x++) {
     if (x == 0) teren[y].resize(mapa.w);
@@ -164,6 +167,7 @@ void nacitajAdresar(string zaznamovyAdresar) {
       teren[y][x][cas] = t;
     }
   }
+  */
 }
 
 
@@ -198,10 +202,12 @@ public:
     }
 
     SDL_Surface *image = TTF_RenderUTF8_Shaded(font, text, fg, bg);
-    SDL_Rect src; src.x = 0; src.y = 0; src.w = min((int)image->w, width * fontWidth); src.h = image->h;
-    SDL_Rect dest; dest.x = x + (right && image->w < width * fontWidth ? width * fontWidth - image->w : 0); dest.y = y;
-    SDL_BlitSurface(image, &src, screen, &dest);
-    SDL_FreeSurface(image);
+    if(image != NULL){
+      SDL_Rect src; src.x = 0; src.y = 0; src.w = min((int)image->w, width * fontWidth); src.h = image->h;
+      SDL_Rect dest; dest.x = x + (right && image->w < width * fontWidth ? width * fontWidth - image->w : 0); dest.y = y;
+      SDL_BlitSurface(image, &src, screen, &dest);
+      SDL_FreeSurface(image);
+    }
     x += width * fontWidth;
   }
 private:
@@ -219,27 +225,36 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   SDL_LockSurface(mapSurface);
   for (int y = 0; y < mapa.h; y++) {
     for (int x = 0; x < mapa.w; x++) {
-      int tuto = (--teren[y][x].upper_bound(now))->second;
+      int tuto = stav.teren.get(x, y);
       switch (tuto) {
-        case MAPA_ZELEZO: putpixel(x, y, 0xFFD4D4); break;
-        case MAPA_ZLATO:  putpixel(x, y, 0xFFFF80); break;
-        case MAPA_SUTER:  putpixel(x, y, 0xFFFFFF); break;
+       // case MAPA_ZELEZO: putpixel(x, y, 0xFFD4D4); break;
+       // case MAPA_ZLATO:  putpixel(x, y, 0xFFFF80); break;
+       // case MAPA_SUTER:  putpixel(x, y, 0xFFFFFF); break;
         case MAPA_VOLNO:  putpixel(x, y, 0xC0C0C0); break;
-        case MAPA_PASCA:
+        case MAPA_HLINA:  putpixel(x, y, 0xFF8800); break;
+        case MAPA_KAMEN:  putpixel(x, y, 0x000000); break;
+        case MAPA_BONUS:  putpixel(x, y, 0x0000FF); break;
+       /* case MAPA_PASCA:
           if (fmod(dnow, 0.2) < 0.1) {
             putpixel(x, y, 0xFFFFFF);
           } else {
             putpixel(x, y, 0xFFC0C0);
-          }
+          }*/
         default:
           putpixel(x, y, 0x000000);
           break;
       }
     }
   }
-  FOREACH(it, stav.manici) {
-    putpixel(it->x, it->y, farbyHracov[it->ktorehoHraca]);
+  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy) {
+    putpixel(stav.hraci[i].x, stav.hraci[i].y, farbyHracov[i]);
   }
+  
+  FOREACH(it, stav.bomby){
+    int r = max(0, 255 - it->timer * 25), g = (now%2)?(r/2):0, b=0;
+    putpixel(it->x, it->y, (r<<16) + (g<<8) + b);
+  }
+
   SDL_UnlockSurface(mapSurface);
 
   SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -247,19 +262,22 @@ void vykresluj(SDL_Surface *screen, double dnow) {
 
   Printer header(screen, 0);
   header.print("Hráč", 20, false); header.print("Skóre", 5);
-  header.print("Au", 4); header.print("kAu", 4);
-  header.print("Fe", 4); header.print("kFe", 4);
-  header.print("Šn", 4);
-  const char* headertypy[] = { "BK", "SČ", "MČ", "SŽ", "SK", "SL", "LV", "KU", "KV" };
-  for (int i = 0; i < MANIK_POCET_TYPOV; i++) header.print(headertypy[i], 2);
+  header.print("Počet", 6);
+  header.print("Sila", 5);
+  header.print("Štít", 5);
+  //header.print("Au", 4); header.print("kAu", 4);
+  //header.print("Fe", 4); header.print("kFe", 4);
+  //header.print("Šn", 4);
+  //const char* headertypy[] = { "BK", "SČ", "MČ", "SŽ", "SK", "SL", "LV", "KU", "KV" };
+  //for (int i = 0; i < MANIK_POCET_TYPOV; i++) header.print(headertypy[i], 2);
 
   SDL_Rect hline; hline.x = 0; hline.y = mapSurface->h + fontHeight - 1; hline.w = screen->w; hline.h = 1;
   SDL_FillRect(screen, &hline, SDL_MapRGB(screen->format, 255, 255, 255));
 
   for (int i = 0; i < mapa.pocetHracov; i++) {
-    int zlato = 0, kzlato = 0, zelezo = 0, kzelezo = 0, spenat = 0;
-    vector<int> t(MANIK_POCET_TYPOV, 0);
-    FOREACH(it, stav.manici) if (it->ktorehoHraca == i) {
+    //nt zlato = 0, kzlato = 0, zelezo = 0, kzelezo = 0, spenat = 0;
+    //vector<int> t(MANIK_POCET_TYPOV, 0);
+    /*FOREACH(it, stav.manici) if (it->ktorehoHraca == i) {
       zlato += it->zlato;
       zelezo += it->zelezo;
       spenat += it->spenat;
@@ -268,16 +286,21 @@ void vykresluj(SDL_Surface *screen, double dnow) {
         kzlato += it->zlato;
         kzelezo += it->zelezo;
       }
-    }
+    }*/
     Printer p(screen, i + 1);
+    const Hrac& hrac = stav.hraci[i];
     p.print(titles[i].c_str(), 20, false, farbyHracov[i]);
-    p.print(itos(stav.hraci[i].skore).c_str(), 5);
-    p.print(itos(zlato).c_str(), 4);
-    p.print(itos(kzlato).c_str(), 4);
-    p.print(itos(zelezo).c_str(), 4);
-    p.print(itos(kzelezo).c_str(), 4);
-    p.print(itos(spenat).c_str(), 4);
-    for (int j = 0; j < MANIK_POCET_TYPOV; j++) p.print(itos(t[j]).c_str(), 2);
+    p.print(itos(hrac.skore).c_str(), 5);
+    p.print(itos(hrac.maxPocetBomb).c_str(), 6);
+    p.print(itos(hrac.silaBomb).c_str(), 5);
+    p.print(( (hrac.maStit)?itos(hrac.maStit).c_str():"" ), 5);
+    
+    //p.print(itos(zlato).c_str(), 4);
+    //p.print(itos(kzlato).c_str(), 4);
+    //p.print(itos(zelezo).c_str(), 4);
+    //p.print(itos(kzelezo).c_str(), 4);
+    //p.print(itos(spenat).c_str(), 4);
+    //for (int j = 0; j < MANIK_POCET_TYPOV; j++) p.print(itos(t[j]).c_str(), 2);
   }
 
   int realtimenow = SDL_GetTicks();
