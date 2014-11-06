@@ -1,4 +1,3 @@
-
 Čo je proboj
 ------------
 
@@ -55,11 +54,57 @@ naserveri SERVERDIR=/adresar/kde/je/server`).
 Ako sa ťahá
 -----------
 
-TODO zdokumentovať.
+Ťahanie je jednoduché: fcia `zistiTah()` má vracať struct typu `Prikaz`, ktorý 
+obsahuje dve premenné: `int smer` a `bool kladiem`.
+That's it.
 
 
 Pravidlá hry
 ------------
 
-TODO zdokumentovať.
+Cielom hry je ziskat co najviac bodov.
+
+Hracia plocha je obdlznikova mapa, ktorej policka su bud priechodne,
+nepriechodne rozbitne policka (hlina), nepriechodne nerozbitne policka (kamen).
+
+Ovladate jedneho hraca, ktory sa moze hybat a klast bomby :)
+Bomby maju timer a silu vybuchu (polomer).
+Zasiahnute policka hliny, hraci a bonusy miznu.
+Bomby, zasiahnute inou bombou, tiez vybuchuju (retazova reakcia).
+
+##Hrac
+- maximalny pocet bomb, ktore mozete mat polozene
+- sila bomb
+- ci mate stit
+
+##Bonusy
+Bonusy sa aktivuju nasliapnutim :)
+Vznikaju, ked sa rozbije policko s hlinou (s nejakou sancou).
+
+### +1 ku sile vybuchu bomb
+polomer vybuchu vasich bomb sa zvacsi o jedna
+
+### +1 ku maximalnemu poctu bomb 
+nuff said
+
+### Stit
+v priebehu niekolkych kol mate imunitu voci vybuchom
+
+### Ohnostroj
+na mape vznikne niekolko bomb s veeelmi dlhym timerom
+
+### Vianoce
+na mapa sa zjavi niekolko dalsich bonusov
+
+##Bodovanie
+###Body za rozbitie hliny
+Ak vasa bomba rozbije policko s hlinou, tak dostavate body
+###Body za zabitie ineho hraca
+###Body za King of Da Hill
+ak ste jediny prezivsi, tak mate veeela bodikov :)
+###Body za samovrazdu
+skakat na vlastne bomby nie je stastny napad ;)
+###Combo
+body dostavate za *kazdu* bombu, ktora zasiahne ciel --> ak trafite niekoho
+naraz viacerymi bombami, tak mate x2 bodov :)
 
