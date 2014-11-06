@@ -50,7 +50,6 @@ void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, Stav& novy);
 void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpoved);
 std::vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav);
 bool hraSkoncila(const Mapa& mapa, const Stav& stav);
-void zaverecneVyhodnotenie(const Mapa& mapa, Stav& stav);
-int zistiSkore(const Stav& stav, int hrac);
+vector<int> zistiSkore(const Mapa& mapa, const Stav& stav);
 
 #endif

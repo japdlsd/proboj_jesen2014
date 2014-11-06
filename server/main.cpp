@@ -104,7 +104,6 @@ int main(int argc, char *argv[]) {
   zapniObservation(&observationstream);
 
   Stav stav = zaciatokHry(mapa);
-  uloz(logstream, stav.teren);
   uloz(logstream, stav);
 
   while (!hraSkoncila(mapa, stav)) {
@@ -150,16 +149,8 @@ int main(int argc, char *argv[]) {
 
   zabiKlientov();
 
-  zaverecneVyhodnotenie(mapa, stav);
-  
-  vector<int> vysledky(klienti.size());
-
-  for (unsigned i = 0; i < klienti.size(); i++) {
-    vysledky[i] = zistiSkore(stav, i);
-  }
-
   ofstream rankstream((zaznamovyAdresar+"/rank").c_str());
-  uloz(rankstream, vysledky);
+  uloz(rankstream, zistiSkore(mapa, stav));
   rankstream.close();
   checkOstream(rankstream, zaznamovyAdresar+"/rank");
 

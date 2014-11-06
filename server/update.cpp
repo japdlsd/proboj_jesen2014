@@ -295,7 +295,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
       stav.teren.set(hrac.pozicia(), MAPA_BOMBA);
       bombyPodlaPolohy[hrac.pozicia()] = vytvorBombu(stav, i);
       hrac.pocetBomb++;
-      OBSERVE("Hrac kladie bobmu na policko", i, hrac.x, hrac.y);
+      OBSERVE("Kladiem", i, hrac.x, hrac.y);
     }
   }
 
@@ -318,11 +318,12 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     // no, konecne mozeme ist
     hrac.x = kam.x;
     hrac.y = kam.y;
-    OBSERVE("Hrac sa poholo na policko", i, hrac.x, hrac.y);
+    OBSERVE("Idem", i, hrac.x, hrac.y);
     
     if(bonusyPodlaPolohy.find(kam) != bonusyPodlaPolohy.end()){
       Bonus bonus = bonusyPodlaPolohy[kam];
       bonusyPodlaPolohy.erase(kam);
+			stav.teren.set(kam, MAPA_VOLNO);
       aktivujBonus(stav, hrac, bonus, bonusyPodlaPolohy, bombyPodlaPolohy);
     }
   }
@@ -395,7 +396,12 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   }
 
   // bodovanie + upratovanie
-  FOREACH(it, hlinyCoMajuHoriet){
+  FOREACH(it, polickaVOhni){
+    bonusyPodlaPolohy.erase(*it);
+		stav.teren.set(*it, MAPA_VOLNO);
+	}
+	
+	FOREACH(it, hlinyCoMajuHoriet){
     FOREACH(itt, it->second) if(*itt > -1){
       stav.hraci[*itt].skore += kBodyZaHlinu;
     }
@@ -415,9 +421,9 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     }
     FOREACH(itt, it->second) if(*itt > -1){
       if(it->first != *itt) stav.hraci[*itt].skore += kBodyZaZabitie;
-      else  stav.hraci[*itt].skore -= kBodyZaSamovrazdu;
+      else  stav.hraci[*itt].skore += kBodyZaSamovrazdu;
     }
-    OBSERVE("Hrac zomrel", stav.hraci[it->first].x, stav.hraci[it->first].y);
+    OBSERVE("SomZomrel", stav.hraci[it->first].x, stav.hraci[it->first].y);
     stav.hraci[it->first].jeZivy = false;
   }
 
@@ -429,7 +435,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     stav.teren.set(*it, MAPA_VOLNO);
     bombyPodlaPolohy.erase(*it);
   }
-  
+
   // prehodenie veci naspat do stavu
   stav.bomby.clear();
   FOREACH(it, bombyPodlaPolohy){
@@ -449,6 +455,11 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   FOREACH(it, stav.bomby){
     it->timer--;
   }
+				
+  {  
+    vector<int> zijuci = ktoriZiju(mapa, stav);
+    if(zijuci.size() == 1) stav.hraci[zijuci[0]].skore += kBodyZaPrezitie;
+	}
 
   OBSERVE("odsimulujKolo.konci", stav.cas, stav.cas + 1);
   stav.cas++;
@@ -486,19 +497,11 @@ bool hraSkoncila(const Mapa& mapa, const Stav& stav) {
   return pocetZivychHracov <= 1 || stav.cas >= kMaximalnaDlzkaHry;
 }
 
-void zaverecneVyhodnotenie(const Mapa& mapa, Stav& stav){
-  // ak ostal iba jeden, tak mu dat bodiky
-  // nemozu mat zaporny pocet bodov
-  vector<int> zijuci = ktoriZiju(mapa, stav);
-  if((int)zijuci.size() == 1){
-    stav.hraci[zijuci[0]].skore += kBodyZaPrezitie;
-  }
-
-  for(int i = 0; i < mapa.pocetHracov; i++){
-    stav.hraci[i].skore = max(stav.hraci[i].skore, 0);
-  }
-}
-
-int zistiSkore(const Stav& stav, int hrac) {
-  return stav.hraci[hrac].skore;
+vector<int> zistiSkore(const Mapa& mapa, const Stav& stav) {
+  vector<int> bla;
+  for(int i = 0; i < mapa.pocetHracov; i++) bla.push_back(stav.hraci[i].skore);
+  //vector<int> zijuci = ktoriZiju(mapa, stav);
+  //if(zijuci.size() == 1) bla[zijuci[0]] += kBodyZaPrezitie;
+  for(int i = 0; i < mapa.pocetHracov; i++) bla[i] = max(bla[i], 0);
+  return bla;
 }
