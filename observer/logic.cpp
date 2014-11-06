@@ -27,6 +27,8 @@ static Mapa mapa;
 static vector<Stav> stavy;
 static vector<pair<string,vector<int> > > observations;
 static vector<string> titles;
+static map<int, vector<Bod> > coKedyHori;
+static map<int, map<int, Bod> > ktoKedyIde;
 
 static set<int> frameTimes;
 
@@ -112,7 +114,7 @@ void nacitajAdresar(string zaznamovyAdresar) {
     observations.push_back(make_pair(type, args));
   }
   observationstream.close();
-
+  
   ifstream mapastream((zaznamovyAdresar+"/map").c_str());
   nacitaj(mapastream, mapa);
   checkStream(mapastream, zaznamovyAdresar+"/map");
@@ -153,21 +155,20 @@ void nacitajAdresar(string zaznamovyAdresar) {
   }
   titlestream.close();
 
-  // int cas = 1;
   /*
   teren.resize(mapa.h);
   for (int y = 0; y < mapa.h; y++) for (int x = 0; x < mapa.w; x++) {
     if (x == 0) teren[y].resize(mapa.w);
     teren[y][x][0] = startovnyTeren.get(x, y);
   }
-  FOREACH(it, observations) {
-    if (it->first == "odsimulujKolo.zacina") cas = it->second[1];
-    if (it->first == "teren") {
-      int x = it->second[0], y = it->second[1], t = it->second[2];
-      teren[y][x][cas] = t;
-    }
-  }
   */
+
+  int cas = 1;
+  FOREACH(it, observations) {
+    if(it->first == "odsimulujKolo.zacina") cas = it->second[1];
+    if(it->first == "Hori")  coKedyHori[cas].push_back(Bod(it->second[0], it->second[1])); 
+    if(it->first == "Idem") ktoKedyIde[cas-1][it->second[0]] = Bod(it->second[1], it->second[2]);
+  }
 }
 
 
@@ -177,11 +178,12 @@ void zistiVelkostObrazovky(int *w, int *h) {
 }
 
 
-static void putpixel(int x, int y, Uint32 c) {
+static void putpixel(int x, int y, Uint32 c, double dx=0, double dy=0) {
   Uint32* pixels = (Uint32 *)mapSurface->pixels;
   x *= scale; y *= scale;
+  dx *= scale; dy *= scale;
   for (int xx = 0; xx < scale; xx++) for (int yy = 0; yy < scale; yy++) {
-    pixels[(y+yy) * mapSurface->w + (x+xx)] = c;
+    pixels[int(y+yy+dy) * mapSurface->w + int(x+xx+dx)] = c;
   }
 }
 
@@ -247,7 +249,11 @@ void vykresluj(SDL_Surface *screen, double dnow) {
     }
   }
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy) {
-    putpixel(stav.hraci[i].x, stav.hraci[i].y, farbyHracov[i]);
+    putpixel(stav.hraci[i].x, stav.hraci[i].y, farbyHracov[i], (dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
+  }
+
+  FOREACH(it, coKedyHori[now]){
+    putpixel(it->x, it->y, 0xFF0000);
   }
   
   FOREACH(it, stav.bomby){

@@ -25,7 +25,7 @@ void inicializuj() {
 // co tato funkcia rozhodne pomocou: prikazy.push_back(Prikaz(...));
 Prikaz zistiTah() {
   // (sem patri vas kod)
-  return Prikaz(rand() % 4, true);
+  return Prikaz(rand() % 4, rand()%4 == 0);
 }
 
 

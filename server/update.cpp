@@ -14,7 +14,7 @@ using namespace std;
 const int DX[] = { 0, 1, 0, -1 };
 const int DY[] = { -1, 0, 1, 0 };
 
-const int kMaximalnaDlzkaHry = 2000;
+const int kMaximalnaDlzkaHry = 500;
 
 const int kPociatocnaSilaBomb = 2; // je to polomer (ak si vzdialeny r policok, tak si v bezpeci)
 const int kPociatocnyMaxPocetBomb = 1;
@@ -24,7 +24,7 @@ const int kBonusSanca[BONUS_POCET_TYPOV] =
 
 const int kBonusZakladnaSanca = 50; // (percenta) sanca, ze bude nejaky bonus
 
-const int kBombaTimer = 10;
+const int kBombaTimer = 5;
 
 const int kStitTrvanie = 20; // pocet kol
 
@@ -244,7 +244,7 @@ inline static void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
   }
 }
 
-int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha){
+int cisloHracaPodlaPolohy(const Stav& stav, const Bod& poloha){
   for(int i = 0; i < (int)stav.hraci.size(); i++){
     if(stav.hraci[i].jeZivy && stav.hraci[i].pozicia() == poloha) return i;
   }
@@ -318,7 +318,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     // no, konecne mozeme ist
     hrac.x = kam.x;
     hrac.y = kam.y;
-    OBSERVE("Idem", i, hrac.x, hrac.y);
+    OBSERVE("Idem", i, DX[prikaz.smer], DY[prikaz.smer]);
     
     if(bonusyPodlaPolohy.find(kam) != bonusyPodlaPolohy.end()){
       Bonus bonus = bonusyPodlaPolohy[kam];
@@ -360,7 +360,8 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
     if(polohyBombCoVybuchnu.find(poloha) != polohyBombCoVybuchnu.end()) continue;
     polohyBombCoVybuchnu.insert(poloha);
     Bomba bomba = bombyPodlaPolohy[poloha];
-
+    
+    polickaVOhni.insert(poloha);
     {
       const int obet = cisloHracaPodlaPolohy(stav, poloha);
       if(obet > -1){
@@ -399,6 +400,7 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   FOREACH(it, polickaVOhni){
     bonusyPodlaPolohy.erase(*it);
 		stav.teren.set(*it, MAPA_VOLNO);
+    OBSERVE("Hori", it->x, it->y);
 	}
 	
 	FOREACH(it, hlinyCoMajuHoriet){

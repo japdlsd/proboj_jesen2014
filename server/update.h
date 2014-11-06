@@ -43,7 +43,7 @@ void zapniObservation(std::ostream* observation);
 Stav zaciatokHry(const Mapa& mapa);
 void prehladajBfs(const Teren& teren, Bod start, Teren& vzdialenost);
 void prehladajLokalneBfs(const Teren& teren, Bod start, int rozsahLimit, std::map<Bod,int>& vzdialenost);
-int cisloHracaPodlaPolohy(Stav &stav, const Bod& poloha);
+int cisloHracaPodlaPolohy(const Stav& stav, const Bod& poloha);
 bool jeTuHrac(Stav& stav, const Bod& p);
 void odsimulujKolo(const Mapa& mapa, Stav& stav, const std::vector<Odpoved>& akcie);
 void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, Stav& novy);
