@@ -22,7 +22,7 @@ void inicializuj() {
 
 
 // main() zavola tuto funkciu, ked chce vediet, ake prikazy chceme vykonat,
-// co tato funkcia rozhodne pomocou: prikazy.push_back(Prikaz(...));
+// co tato funkcia rozhodne pomocou: return Prikaz(<smer>, <ci polozim bombu>)
 Prikaz zistiTah() {
   // (sem patri vas kod)
   return Prikaz();
