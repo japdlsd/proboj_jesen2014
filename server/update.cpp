@@ -14,7 +14,7 @@ using namespace std;
 const int DX[] = { 0, 1, 0, -1 };
 const int DY[] = { -1, 0, 1, 0 };
 
-const int kMaximalnaDlzkaHry = 500;
+const int kMaximalnaDlzkaHry = 2000;
 
 const int kPociatocnaSilaBomb = 2; // je to polomer (ak si vzdialeny r policok, tak si v bezpeci)
 const int kPociatocnyMaxPocetBomb = 1;

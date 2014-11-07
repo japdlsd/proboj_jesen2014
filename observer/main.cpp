@@ -11,7 +11,7 @@ using namespace std;
 #include "logic.h"
 
 
-#define INITIAL_SPEED 300
+#define INITIAL_SPEED 200
 #define FPS 50
 
 
