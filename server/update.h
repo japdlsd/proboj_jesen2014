@@ -4,6 +4,7 @@
 
 #include <ostream>
 #include <map>
+#include <vector>
 
 #include "common.h"
 
@@ -50,6 +51,11 @@ void zamaskujStav(const Mapa& mapa, const Stav& stav, int hrac, Stav& novy);
 void odmaskujOdpoved(const Mapa& mapa, const Stav& stav, int hrac, Odpoved& odpoved);
 std::vector<int> ktoriZiju(const Mapa& mapa, const Stav& stav);
 bool hraSkoncila(const Mapa& mapa, const Stav& stav);
-vector<int> zistiSkore(const Mapa& mapa, const Stav& stav);
+std::vector<int> zistiSkore(const Mapa& mapa, const Stav& stav);
+Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha);
+Bomba vytvorBombu(Stav& stav, const int i);
+Bonus vytvorBonus(const int id, const Bod& poloha);
+void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,  
+    std::map<Bod, Bonus>& bonusyPodlaPolohy, std::map<Bod, Bomba>& bombyPodlaPolohy);
 
 #endif

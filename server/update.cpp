@@ -14,7 +14,7 @@ using namespace std;
 const int DX[] = { 0, 1, 0, -1 };
 const int DY[] = { -1, 0, 1, 0 };
 
-const int kMaximalnaDlzkaHry = 2000;
+const int kMaximalnaDlzkaHry = 700;
 
 const int kPociatocnaSilaBomb = 2; // je to polomer (ak si vzdialeny r policok, tak si v bezpeci)
 const int kPociatocnyMaxPocetBomb = 1;
@@ -155,7 +155,7 @@ int ktoJeNaPolicku(const Stav& stav, const Bod& p){
   return -1;
 }
 
-inline static Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
+Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
   // prepokladas, ze to pouzijes pred odpocitavanim timerov, teda timer je o jedna vacsi
   Bomba bomba = Bomba();
   bomba.id = id;
@@ -168,12 +168,12 @@ inline static Bomba vytvorBombu(const int id, const int kto, const int sila, con
   return bomba;
 }
 
-inline static Bomba vytvorBombu(Stav& stav, const int i){
+Bomba vytvorBombu(Stav& stav, const int i){
   Hrac& hrac = stav.hraci[i];
   return vytvorBombu(stav.dalsiId++, i, hrac.silaBomb, kBombaTimer, hrac.pozicia());
 }
 
-inline static Bonus vytvorBonus(const int id, const Bod& poloha){
+Bonus vytvorBonus(const int id, const Bod& poloha){
   Bonus bonus = Bonus();
   bonus.id = id;
   bonus.x = poloha.x;
@@ -193,7 +193,7 @@ inline static Bonus vytvorBonus(const int id, const Bod& poloha){
   return bonus;
 }
 
-inline static void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus, 
+void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus, 
     map<Bod, Bonus>& bonusyPodlaPolohy, map<Bod, Bomba>& bombyPodlaPolohy){
   if(bonus.typ == BONUS_SILA){
     hrac.silaBomb += 1;
