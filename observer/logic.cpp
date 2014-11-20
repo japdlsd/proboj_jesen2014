@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include "SDL.h"
+#include <SDL_image.h>
 #include "SDL_ttf.h"
 using namespace std;
 
@@ -35,6 +36,7 @@ static set<int> frameTimes;
 static TTF_Font *font;
 static int fontWidth, fontHeight;
 static SDL_Surface *mapSurface;
+static SDL_Surface *imgBomba, *imgKamen, *imgHlina, *imgBonus, *imgVybuch, *imgBombaCervena;
 
 const int farbyHracov[] = {
   0xC00000,
@@ -45,6 +47,16 @@ const int farbyHracov[] = {
   0x00C0C0,
 };
 
+vector<SDL_Surface*> imgHraci(6);
+const char* adresyObrazkoHracov[6] = {
+  "/figures/veduci.png",
+  "/figures/captain_fox.png",
+  "/figures/pirate_guineapig.png",
+  "/figures/sergeant_kitty.png",
+  "/figures/soldier_mouse.png",
+  "/figures/viking_chicken.png"
+
+};
 
 template<class T> void checkStream(T& s, string filename) {
   if (s.fail()) {
@@ -53,6 +65,14 @@ template<class T> void checkStream(T& s, string filename) {
   }
 }
 
+SDL_Surface* nacitajObrazok(string adresa, string programovyAdresar){
+  SDL_Surface *img = IMG_Load((programovyAdresar + adresa).c_str());
+  if (img == NULL) {
+    fprintf(stderr, "nemam obrazok %s\n", adresa.c_str());
+    exit(1);
+  }
+  return img;
+}
 
 void nacitajMedia(string programovyAdresar) {
   const char *command = "fc-match monospace -f %{file}";
@@ -89,6 +109,16 @@ void nacitajMedia(string programovyAdresar) {
   }
 
   // @TODO nacitaj obrazky. niekedy.
+  imgBomba = nacitajObrazok("/figures/bomb.png", programovyAdresar);
+  imgHlina = nacitajObrazok("/figures/dirt.png", programovyAdresar);
+  imgKamen = nacitajObrazok("/figures/solid.png", programovyAdresar);
+  imgBonus = nacitajObrazok("/figures/bonus.png", programovyAdresar);
+  imgVybuch = nacitajObrazok("/figures/explosion.png", programovyAdresar);
+  imgBombaCervena = nacitajObrazok("/figures/bomb_red.png", programovyAdresar);
+
+  for(int i = 0; i < imgHraci.size(); i++){
+    imgHraci[i] = nacitajObrazok(adresyObrazkoHracov[i], programovyAdresar);
+  }
 }
 
 
@@ -188,6 +218,15 @@ static void putpixel(int x, int y, Uint32 c, double dx=0, double dy=0) {
 }
 
 
+static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0) {
+  dx *= scale; dy *= scale;
+  x *= scale; x += dx;
+  y *= scale; y += dy;
+  SDL_Rect r = { (Sint16)x, (Sint16)y, 0, 0 };
+  SDL_BlitSurface(image, NULL, mapSurface, &r);
+}
+
+
 class Printer {
 public:
   Printer(SDL_Surface *_screen, int _y) : screen(_screen), x(0), y(mapSurface->h + _y * fontHeight) {
@@ -229,39 +268,54 @@ void vykresluj(SDL_Surface *screen, double dnow) {
     for (int x = 0; x < mapa.w; x++) {
       int tuto = stav.teren.get(x, y);
       switch (tuto) {
-       // case MAPA_ZELEZO: putpixel(x, y, 0xFFD4D4); break;
-       // case MAPA_ZLATO:  putpixel(x, y, 0xFFFF80); break;
-       // case MAPA_SUTER:  putpixel(x, y, 0xFFFFFF); break;
-        case MAPA_VOLNO:  putpixel(x, y, 0xC0C0C0); break;
         case MAPA_HLINA:  putpixel(x, y, 0xFF8800); break;
         case MAPA_KAMEN:  putpixel(x, y, 0x000000); break;
-        case MAPA_BONUS:  putpixel(x, y, 0x0000FF); break;
-       /* case MAPA_PASCA:
-          if (fmod(dnow, 0.2) < 0.1) {
-            putpixel(x, y, 0xFFFFFF);
-          } else {
-            putpixel(x, y, 0xFFC0C0);
-          }*/
+        //case MAPA_BONUS:  putpixel(x, y, 0x0000FF); break;
         default:
-          putpixel(x, y, 0x000000);
+          putpixel(x, y, 0xC0C0C0);
           break;
       }
     }
   }
-  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy) {
+  /*for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy) {
     putpixel(stav.hraci[i].x, stav.hraci[i].y, farbyHracov[i], (dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
-  }
-
-  FOREACH(it, coKedyHori[now]){
-    putpixel(it->x, it->y, 0xFF0000);
-  }
-  
-  FOREACH(it, stav.bomby){
-    int r = max(0, 255 - it->timer * 25), g = (now%2)?(r/2):0, b=0;
-    putpixel(it->x, it->y, (r<<16) + (g<<8) + b);
-  }
+  }*/
 
   SDL_UnlockSurface(mapSurface);
+  
+  FOREACH(it, coKedyHori[now]){
+    //putpixel(it->x, it->y, 0xFF0000);
+    putimage(it->x, it->y, imgVybuch);
+  }
+
+ 
+  for(int y = 0; y < mapa.h; y++){
+    for(int x = 0; x < mapa.w; x++){
+      int tuto = stav.teren.get(x,y);
+      switch(tuto){
+        case MAPA_HLINA: putimage(x, y, imgHlina); break;
+        case MAPA_KAMEN: putimage(x, y, imgKamen); break;
+        case MAPA_BONUS: putimage(x, y, imgBonus); break;
+      }
+    }
+  }
+
+  FOREACH(it, stav.bomby){
+//    int r = max(0, 255 - it->timer * 25), g = (now%2)?(r/2):0, b=0;
+//    putpixel(it->x, it->y, (r<<16) + (g<<8) + b);
+    putimage(it->x, it->y, imgBomba);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(NULL, imgBombaCervena);
+  }
+  
+  for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
+    const Hrac &hrac = stav.hraci[i];
+    if(i < imgHraci.size()){
+      putimage(hrac.x, hrac.y, imgHraci[i], (dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
+    }
+    else{
+      putpixel(hrac.x, hrac.y, farbyHracov[i],(dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
+    }
+  }
 
   SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
   SDL_BlitSurface(mapSurface, NULL, screen, NULL);
