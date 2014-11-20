@@ -156,12 +156,11 @@ int ktoJeNaPolicku(const Stav& stav, const Bod& p){
 }
 
 Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, const Bod& poloha){
-  // prepokladas, ze to pouzijes pred odpocitavanim timerov, teda timer je o jedna vacsi
   Bomba bomba = Bomba();
   bomba.id = id;
   bomba.kto = kto;
   bomba.sila = sila;
-  bomba.timer = timer + 1;
+  bomba.timer = timer;
   bomba.x = poloha.x;
   bomba.y = poloha.y;
 
