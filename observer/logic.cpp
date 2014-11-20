@@ -40,11 +40,11 @@ static SDL_Surface *imgBomba, *imgKamen, *imgHlina, *imgBonus, *imgVybuch, *imgB
 
 const int farbyHracov[] = {
   0xC00000,
-  0x00C000,
-  0x0000C0,
-  0x808000,
-  0xC000C0,
-  0x00C0C0,
+  0xFF6F00,
+  0xC0C0C0,
+  0xFFFFFF,
+  0x00FF00,
+  0xFFFF00,
 };
 
 vector<SDL_Surface*> imgHraci(6);
@@ -100,7 +100,7 @@ void nacitajMedia(string programovyAdresar) {
   }
   fontfile[len] = 0;
 
-  font = TTF_OpenFont(fontfile, 12);
+  font = TTF_OpenFont(fontfile, 17); // nastavenie fontu!
   if (!font) {
     fprintf(stderr, "neviem otvorit %s: %s\n", fontfile, TTF_GetError());
     exit(1);
@@ -224,7 +224,7 @@ static void putpixel(int x, int y, Uint32 c, double dx=0, double dy=0) {
 }
 
 
-static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0, double alpha=1) {
+static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0, double alpha=1, SDL_Surface *mapSurface=mapSurface) {
   //bleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   SDL_Surface *pomocny = spravSurface(image->w, image->h, true);
   SDL_LockSurface(image);
@@ -251,7 +251,7 @@ static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0,
 
 class Printer {
 public:
-  Printer(SDL_Surface *_screen, int _y) : screen(_screen), x(0), y(mapSurface->h + _y * fontHeight) {
+  Printer(SDL_Surface *_screen, int _y, int _x=0) : screen(_screen), x(_x), y(mapSurface->h + _y * fontHeight) {
   }
   void print(const char *text, int width, bool right = true, Uint32 color = 0xFFFFFF) {
     SDL_Color fg; fg.r = (color>>16)&0xFF; fg.g = (color>>8)&0xFF; fg.b = (Uint8)(color&0xFF);
@@ -327,7 +327,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
 //    putpixel(it->x, it->y, (r<<16) + (g<<8) + b);
     putimage(it->x, it->y, imgBomba);
 //    SDL_Texture *texture = SDL_CreateTextureFromSurface(NULL, imgBombaCervena);
-    putimage(it->x, it->y, imgBombaCervena, 0, 0, 1.00 / (it->timer+1));
+    putimage(it->x, it->y, imgBombaCervena, 0, 0, pow(2.71, -it->timer / 2.00));
   }
   
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
@@ -343,7 +343,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
   SDL_BlitSurface(mapSurface, NULL, screen, NULL);
 
-  Printer header(screen, 0);
+  Printer header(screen, 0, 20);
   header.print("Hráč", 20, false); header.print("Skóre", 5);
   header.print("Počet", 6);
   header.print("Sila", 5);
@@ -370,8 +370,9 @@ void vykresluj(SDL_Surface *screen, double dnow) {
         kzelezo += it->zelezo;
       }
     }*/
-    Printer p(screen, i + 1);
+    Printer p(screen, i + 1, 20);
     const Hrac& hrac = stav.hraci[i];
+    putimage(0, mapa.w  + 1 + i, imgHraci[i], 0, 0, 1, screen); // @TODO;
     p.print(titles[i].c_str(), 20, false, farbyHracov[i]);
     p.print(itos(hrac.skore).c_str(), 5);
     p.print(itos(hrac.maxPocetBomb).c_str(), 6);
@@ -393,5 +394,5 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   char buf[1000];
   sprintf(buf, "čas %d", now);
   if (realtimenow > 5000) sprintf(buf+strlen(buf), ", fps %.1f", frameTimes.size()/5.0);
-  Printer(screen, mapa.pocetHracov + 1).print(buf, 30, false);
+  Printer(screen, mapa.pocetHracov + 1, 20).print(buf, 30, false);
 }
