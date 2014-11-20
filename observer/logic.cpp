@@ -74,6 +74,17 @@ SDL_Surface* nacitajObrazok(string adresa, string programovyAdresar){
   return img;
 }
 
+SDL_Surface *spravSurface(int w, int h, bool alfa) {
+  SDL_Surface *surface = alfa ?
+    SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF) :
+    SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, 0xFF0000, 0x00FF00, 0x0000FF, 0x000000);
+  if (surface->pitch != surface->w * 4) {
+    fprintf(stderr, "surface ma zly pitch\n");
+    exit(1);
+  }
+  return surface;
+}
+
 void nacitajMedia(string programovyAdresar) {
   const char *command = "fc-match monospace -f %{file}";
   FILE *pipe = popen(command, "r");
@@ -101,12 +112,7 @@ void nacitajMedia(string programovyAdresar) {
   fontWidth = space->w;
   SDL_FreeSurface(space);
 
-  mapSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, mapa.w*scale, mapa.h*scale, 32,
-      0xFF0000, 0x00FF00, 0x0000FF, 0x000000);
-  if (mapSurface->pitch != mapSurface->w * 4) {
-    fprintf(stderr, "mapSurface ma zly pitch\n");
-    exit(1);
-  }
+  mapSurface = spravSurface(mapa.w*scale, mapa.h*scale, false);
 
   // @TODO nacitaj obrazky. niekedy.
   imgBomba = nacitajObrazok("/figures/bomb.png", programovyAdresar);
@@ -218,12 +224,28 @@ static void putpixel(int x, int y, Uint32 c, double dx=0, double dy=0) {
 }
 
 
-static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0) {
+static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0, double alpha=1) {
+  //bleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  SDL_Surface *pomocny = spravSurface(image->w, image->h, true);
+  SDL_LockSurface(image);
+  SDL_LockSurface(pomocny);
+  for (int yy = 0; yy < image->h; yy++) for (int xx = 0; xx < image->w; xx++) {
+    int c = *((Uint32*)&((Uint8*)image->pixels)[yy * image->pitch + xx*4]);
+    Uint8 r, g, b, a; SDL_GetRGBA(c, image->format, &r, &g, &b, &a);
+    a = a * alpha;
+    c = SDL_MapRGBA(pomocny->format, r, g, b, a);
+    *((Uint32*)&((Uint8*)pomocny->pixels)[yy * pomocny->pitch + xx*4]) = c;
+  }
+  SDL_UnlockSurface(pomocny);
+  SDL_UnlockSurface(image);
+  //bleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
   dx *= scale; dy *= scale;
   x *= scale; x += dx;
   y *= scale; y += dy;
   SDL_Rect r = { (Sint16)x, (Sint16)y, 0, 0 };
-  SDL_BlitSurface(image, NULL, mapSurface, &r);
+  SDL_BlitSurface(pomocny, NULL, mapSurface, &r);
+  SDL_FreeSurface(pomocny);
 }
 
 
@@ -285,7 +307,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   
   FOREACH(it, coKedyHori[now]){
     //putpixel(it->x, it->y, 0xFF0000);
-    putimage(it->x, it->y, imgVybuch);
+    putimage(it->x, it->y, imgVybuch, 0, 0, min(1.0, dnow - now));
   }
 
  
@@ -304,7 +326,8 @@ void vykresluj(SDL_Surface *screen, double dnow) {
 //    int r = max(0, 255 - it->timer * 25), g = (now%2)?(r/2):0, b=0;
 //    putpixel(it->x, it->y, (r<<16) + (g<<8) + b);
     putimage(it->x, it->y, imgBomba);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(NULL, imgBombaCervena);
+//    SDL_Texture *texture = SDL_CreateTextureFromSurface(NULL, imgBombaCervena);
+    putimage(it->x, it->y, imgBombaCervena, 0, 0, 1.00 / (it->timer+1));
   }
   
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
