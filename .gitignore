@@ -13,3 +13,4 @@ hlavnykomp/srvconfig
 hlavnykomp/webconfig
 hlavnykomp/web/*env
 /veduci
+/tmp
