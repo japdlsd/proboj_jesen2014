@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
   TTF_Init();
   atexit(TTF_Quit);
 
-  nacitajMedia();
+  string program(argv[0]);
+  nacitajMedia(program.substr(0, program.find_last_of('/')));
 
   int w, h;
   zistiVelkostObrazovky(&w, &h);

@@ -6,7 +6,7 @@
 
 struct SDL_Surface;
 
-void nacitajMedia();
+void nacitajMedia(std::string programovyAdresar);
 void nacitajAdresar(std::string zaznamovyAdresar);
 void zistiVelkostObrazovky(int *w, int *h);
 void vykresluj(SDL_Surface *screen, double now);

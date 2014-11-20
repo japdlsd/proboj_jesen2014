@@ -54,7 +54,7 @@ template<class T> void checkStream(T& s, string filename) {
 }
 
 
-void nacitajMedia() {
+void nacitajMedia(string programovyAdresar) {
   const char *command = "fc-match monospace -f %{file}";
   FILE *pipe = popen(command, "r");
   if (pipe == NULL) {
