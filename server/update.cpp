@@ -105,7 +105,7 @@ Stav zaciatokHry(const Mapa& mapa) {
   return stav;
 }
 
-void prehladajBfs(const Teren& teren, const Bod& start, Teren& vzdialenost) {
+void prehladajBfs(const Teren& teren, Bod start, Teren& vzdialenost) {
   int inf = teren.w() * teren.h() * 2;
   vzdialenost.vyprazdni(teren.w(), teren.h(), inf);
   queue<Bod> Q;
@@ -123,7 +123,7 @@ void prehladajBfs(const Teren& teren, const Bod& start, Teren& vzdialenost) {
   }
 }
 
-void prehladajLokalneBfs(const Teren& teren, const Bod& start, int rozsahLimit, map<Bod,int>& vzdialenost) {
+void prehladajLokalneBfs(const Teren& teren, Bod start, int rozsahLimit, map<Bod,int>& vzdialenost) {
   vzdialenost.clear();
   queue<Bod> Q;
   vzdialenost[start] = 0;
