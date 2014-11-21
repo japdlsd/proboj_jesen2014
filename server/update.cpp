@@ -38,10 +38,10 @@ const int kVianocePocet = 5;
 const int kVianocePocetPokusov = 10;
 
 
-const int kBodyZaHlinu = 3;
+const int kBodyZaHlinu = 1;
 const int kBodyZaZabitie = 50;
-const int kBodyZaSamovrazdu = -40;
-const int kBodyZaPrezitie = 400;
+const int kBodyZaSamovrazdu = -20;
+const int kBodyZaPrezitie = 500;
 
 static ostream* g_observation;
 void zapniObservation(ostream* observation) { g_observation = observation; }
