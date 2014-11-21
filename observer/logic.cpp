@@ -41,6 +41,7 @@ static SDL_Surface *imgHlina;
 static SDL_Surface *imgBonus;
 static SDL_Surface *imgVybuch;
 static SDL_Surface *imgBombaCervena;
+static SDL_Surface *imgStit;
 
 const int farbyHracov[] = {
   0xC00000,
@@ -123,6 +124,7 @@ void nacitajMedia(string programovyAdresar) {
   imgBonus = nacitajObrazok("/figures/bonus.png", programovyAdresar);
   imgVybuch = nacitajObrazok("/figures/explosion.png", programovyAdresar);
   imgBombaCervena = nacitajObrazok("/figures/bomb_red.png", programovyAdresar);
+  imgStit = nacitajObrazok("/figures/shield.png", programovyAdresar);
 
   for(int i = 0; i < imgHraci.size(); i++){
     imgHraci[i] = nacitajObrazok(adresyObrazkovHracov[i], programovyAdresar);
@@ -323,6 +325,10 @@ void vykresluj(SDL_Surface *screen, double dnow) {
     }
     else{
       putpixel(hrac.x, hrac.y, farbyHracov[i],(dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
+    }
+    if(hrac.maStit > 0){
+      putimage(hrac.x, hrac.y, imgStit, (dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y, 0.4);
+
     }
   }
 
