@@ -236,7 +236,9 @@ static void putpixel(int x, int y, Uint32 c, double dx=0, double dy=0) {
 
 static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0, double alpha=1, SDL_Surface *mapSurface=mapSurface) {
   //bleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-  SDL_Surface *pomocny = spravSurface(image->w, image->h, true);
+  SDL_Surface *pomocny = NULL;
+  if (alpha != 1) {
+  pomocny = spravSurface(image->w, image->h, true);
   SDL_LockSurface(image);
   SDL_LockSurface(pomocny);
   for (int yy = 0; yy < image->h; yy++) for (int xx = 0; xx < image->w; xx++) {
@@ -248,14 +250,15 @@ static void putimage(int x, int y, SDL_Surface *image, double dx=0, double dy=0,
   }
   SDL_UnlockSurface(pomocny);
   SDL_UnlockSurface(image);
+  }
   //bleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
   dx *= scale; dy *= scale;
   x *= scale; x += dx;
   y *= scale; y += dy;
   SDL_Rect r = { (Sint16)x, (Sint16)y, 0, 0 };
-  SDL_BlitSurface(pomocny, NULL, mapSurface, &r);
-  SDL_FreeSurface(pomocny);
+  SDL_BlitSurface(pomocny ? pomocny : image, NULL, mapSurface, &r);
+  if (pomocny) SDL_FreeSurface(pomocny);
 }
 
 
