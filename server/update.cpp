@@ -22,7 +22,7 @@ const int kPociatocnyMaxPocetBomb = 1;
 const int kBonusSanca[BONUS_POCET_TYPOV] = 
     {30, 30, 20, 10, 10}; // (percenta) urcuje aky typ bonusu padne, ak padne
 
-const int kBonusZakladnaSanca = 50; // (percenta) sanca, ze bude nejaky bonus
+const int kBonusZakladnaSanca = 10; // (percenta) sanca, ze bude nejaky bonus
 
 const int kBombaTimer = 5;
 
