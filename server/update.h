@@ -33,6 +33,7 @@ extern const int kOhnostrojPocetPokusov;
 extern const int kVianocePocet;
 extern const int kVianocePocetPokusov;
 
+extern const int kFreezeInkrement;
 
 extern const int kBodyZaHlinu;
 extern const int kBodyZaZabitie;

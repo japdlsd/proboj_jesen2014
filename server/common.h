@@ -23,8 +23,9 @@
 #define BONUS_STIT        2
 #define BONUS_OHNOSTROJ   3
 #define BONUS_VIANOCE     4
+#define BONUS_FREEZE      5
 
-#define BONUS_POCET_TYPOV 5
+#define BONUS_POCET_TYPOV 6
 
 #define SMER_NIKAM -1
 #define SMER_HORE 0

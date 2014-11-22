@@ -20,13 +20,13 @@ const int kPociatocnaSilaBomb = 2; // je to polomer (ak si vzdialeny r policok, 
 const int kPociatocnyMaxPocetBomb = 1;
 
 const int kBonusSanca[BONUS_POCET_TYPOV] = 
-    {30, 30, 20, 10, 10}; // (percenta) urcuje aky typ bonusu padne, ak padne
+    {25, 25, 20, 10, 10, 10}; // (percenta) urcuje aky typ bonusu padne, ak padne
 
 const int kBonusZakladnaSanca = 10; // (percenta) sanca, ze bude nejaky bonus
 
-const int kBombaTimer = 5;
+const int kBombaTimer = 7;
 
-const int kStitTrvanie = 20; // pocet kol
+const int kStitTrvanie = 30; // pocet kol
 
 const int kOhnostrojKto = -1;
 const int kOhnostrojPocet = 6;
@@ -37,6 +37,7 @@ const int kOhnostrojPocetPokusov = 10;
 const int kVianocePocet = 5;
 const int kVianocePocetPokusov = 10;
 
+const int kFreezeInkrement = 10;
 
 const int kBodyZaHlinu = 1;
 const int kBodyZaZabitie = 50;
@@ -239,6 +240,12 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
 
         ostavaBonusov--;
       }
+    }
+  }
+  else if(bonus.typ == BONUS_FREEZE){
+    // vsetky bomby dostanu +konstantu ku timerom
+    FOREACH(it, bombyPodlaPolohy){
+      it->second.timer += kFreezeInkrement;
     }
   }
 }

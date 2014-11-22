@@ -38,7 +38,6 @@ static SDL_Surface *mapSurface;
 static SDL_Surface *imgBomba;
 static SDL_Surface *imgKamen;
 static SDL_Surface *imgHlina;
-static SDL_Surface *imgBonus;
 static SDL_Surface *imgVybuch;
 static SDL_Surface *imgBombaCervena;
 static SDL_Surface *imgStit;
@@ -60,6 +59,16 @@ const char* adresyObrazkovHracov[6] = {
   "/figures/sergeant_kitty.png",
   "/figures/soldier_mouse.png",
   "/figures/viking_chicken.png"
+};
+
+vector<SDL_Surface *> imgBonusy(BONUS_POCET_TYPOV);
+const char* adresyObrazkovBonusov[BONUS_POCET_TYPOV] = {
+  "/figures/bonus_sila.png",
+  "/figures/bonus_pocet.png",
+  "/figures/bonus_stit.png",
+  "/figures/bonus_ohnostroj.png",
+  "/figures/bonus_darcek.png",
+  "/figures/bonus_freeze.png"
 };
 
 template<class T> void checkStream(T& s, string filename) {
@@ -121,13 +130,16 @@ void nacitajMedia(string programovyAdresar) {
   imgBomba = nacitajObrazok("/figures/bomb.png", programovyAdresar);
   imgHlina = nacitajObrazok("/figures/dirt.png", programovyAdresar);
   imgKamen = nacitajObrazok("/figures/solid.png", programovyAdresar);
-  imgBonus = nacitajObrazok("/figures/bonus.png", programovyAdresar);
   imgVybuch = nacitajObrazok("/figures/explosion.png", programovyAdresar);
   imgBombaCervena = nacitajObrazok("/figures/bomb_red.png", programovyAdresar);
   imgStit = nacitajObrazok("/figures/shield.png", programovyAdresar);
 
-  for(int i = 0; i < imgHraci.size(); i++){
+  for(int i = 0; i < (int)imgHraci.size(); i++){
     imgHraci[i] = nacitajObrazok(adresyObrazkovHracov[i], programovyAdresar);
+  }
+
+  for(int i = 0; i < (int)imgBonusy.size(); i++){
+    imgBonusy[i] = nacitajObrazok(adresyObrazkovBonusov[i], programovyAdresar);
   }
 }
 
@@ -308,9 +320,12 @@ void vykresluj(SDL_Surface *screen, double dnow) {
       switch(tuto){
         case MAPA_HLINA: putimage(x, y, imgHlina); break;
         case MAPA_KAMEN: putimage(x, y, imgKamen); break;
-        case MAPA_BONUS: putimage(x, y, imgBonus); break;
       }
     }
+  }
+
+  FOREACH(bonus, stav.bonusy){
+    putimage(bonus->x, bonus->y, imgBonusy[bonus->typ]);
   }
 
   FOREACH(it, stav.bomby){
@@ -320,7 +335,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
     const Hrac &hrac = stav.hraci[i];
-    if(i < imgHraci.size()){
+    if(i < (int)imgHraci.size()){
       putimage(hrac.x, hrac.y, imgHraci[i], (dnow - now)*(ktoKedyIde[now][i].x), (dnow-now)*ktoKedyIde[now][i].y);
     }
     else{
