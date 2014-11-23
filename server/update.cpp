@@ -22,11 +22,11 @@ const int kPociatocnyMaxPocetBomb = 1;
 const int kBonusSanca[BONUS_POCET_TYPOV] = 
     {25, 25, 20, 10, 10, 10}; // (percenta) urcuje aky typ bonusu padne, ak padne
 
-const int kBonusZakladnaSanca = 10; // (percenta) sanca, ze bude nejaky bonus
+const int kBonusZakladnaSanca = 25; // (percenta) sanca, ze bude nejaky bonus
 
 const int kBombaTimer = 7;
 
-const int kStitTrvanie = 30; // pocet kol
+const int kStitTrvanie = 50; // pocet kol
 
 const int kOhnostrojKto = -1;
 const int kOhnostrojPocet = 6;
@@ -37,7 +37,7 @@ const int kOhnostrojPocetPokusov = 10;
 const int kVianocePocet = 5;
 const int kVianocePocetPokusov = 10;
 
-const int kFreezeInkrement = 10;
+const int kFreezeInkrement = 30;
 
 const int kBodyZaHlinu = 1;
 const int kBodyZaZabitie = 50;
