@@ -37,7 +37,7 @@ const int kOhnostrojPocetPokusov = 10;
 const int kVianocePocet = 5;
 const int kVianocePocetPokusov = 10;
 
-const int kFreezeInkrement = 30;
+const int kFreezeInkrement = 10;
 
 const int kBodyZaHlinu = 1;
 const int kBodyZaZabitie = 100;
