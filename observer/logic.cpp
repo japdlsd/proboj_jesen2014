@@ -368,7 +368,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   for (int i = 0; i < mapa.pocetHracov; i++) {
     Printer p(screen, i + 1, mapa.w);
     const Hrac& hrac = stav.hraci[i];
-    putimage(mapa.h, 1 + i, imgHraci[i], 0, 0, 1, screen); // @TODO;
+    putimage(mapa.w, 1 + i, imgHraci[i], 0, 0, 1, screen); // @TODO;
     p.print(titles[i].c_str(), 20, false, farbyHracov[i]);
     p.print(itos(hrac.skore).c_str(), 5);
     p.print(itos(hrac.maxPocetBomb).c_str(), 6);
