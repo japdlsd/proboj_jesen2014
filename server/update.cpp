@@ -470,7 +470,13 @@ void odsimulujKolo(const Mapa& mapa, Stav& stav, const vector<Odpoved>& akcie) {
   {  
     vector<int> zijuci = ktoriZiju(mapa, stav);
     if(zijuci.size() == 1) stav.hraci[zijuci[0]].skore += kBodyZaPrezitie;
-	}
+    else if(stav.cas + 1 >= kMaximalnaDlzkaHry){
+      // parcialne body za preitie
+      for(int i = 0; i < (int)zijuci.size(); i++){
+        stav.hraci[zijuci[i]].skore += kBodyZaPrezitie / (int) ( zijuci.size() * zijuci.size()  );
+      }
+    }
+  }
 
   OBSERVE("odsimulujKolo.konci", stav.cas, stav.cas + 1);
   stav.cas++;
