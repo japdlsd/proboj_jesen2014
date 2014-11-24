@@ -58,6 +58,7 @@ struct Bomba {
   int y;
   int timer; // o kolko kol vybuchne
   int sila;
+  bool isFrozen;
   Bod pozicia() const { return Bod(x, y); }
 };
 
@@ -155,6 +156,7 @@ reflection(Bomba);
   member(y);
   member(sila);
   member(timer);
+  member(isFrozen);
 end();
 
 reflection(Prikaz);

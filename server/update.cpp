@@ -164,6 +164,8 @@ Bomba vytvorBombu(const int id, const int kto, const int sila, const int timer, 
   bomba.timer = timer;
   bomba.x = poloha.x;
   bomba.y = poloha.y;
+  
+  bomba.isFrozen = false;
 
   return bomba;
 }
@@ -246,6 +248,7 @@ void aktivujBonus(Stav &stav, Hrac &hrac, const Bonus& bonus,
     // vsetky bomby dostanu +konstantu ku timerom
     FOREACH(it, bombyPodlaPolohy){
       it->second.timer += kFreezeInkrement;
+      it->second.isFrozen = true;
     }
   }
 }

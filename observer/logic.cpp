@@ -40,6 +40,7 @@ static SDL_Surface *imgKamen;
 static SDL_Surface *imgHlina;
 static SDL_Surface *imgVybuch;
 static SDL_Surface *imgBombaCervena;
+static SDL_Surface *imgBombaModra;
 static SDL_Surface *imgStit;
 
 const int farbyHracov[] = {
@@ -132,6 +133,7 @@ void nacitajMedia(string programovyAdresar) {
   imgKamen = nacitajObrazok("/figures/solid.png", programovyAdresar);
   imgVybuch = nacitajObrazok("/figures/explosion.png", programovyAdresar);
   imgBombaCervena = nacitajObrazok("/figures/bomb_red.png", programovyAdresar);
+  imgBombaModra = nacitajObrazok("/figures/bomb_blue.png", programovyAdresar);
   imgStit = nacitajObrazok("/figures/shield.png", programovyAdresar);
 
   for(int i = 0; i < (int)imgHraci.size(); i++){
@@ -331,6 +333,7 @@ void vykresluj(SDL_Surface *screen, double dnow) {
   FOREACH(it, stav.bomby){
     putimage(it->x, it->y, imgBomba);
     putimage(it->x, it->y, imgBombaCervena, 0, 0, pow(2.71, -it->timer / 2.00));
+    if (it->isFrozen) putimage(it->x, it->y, imgBombaModra, 0, 0,   1 - 1/ (pow(2, it->timer/4.00))   );
   }
   
   for(int i = 0; i < mapa.pocetHracov; i++) if(stav.hraci[i].jeZivy){
