@@ -40,7 +40,7 @@ const int kVianocePocetPokusov = 10;
 const int kFreezeInkrement = 30;
 
 const int kBodyZaHlinu = 1;
-const int kBodyZaZabitie = 50;
+const int kBodyZaZabitie = 100;
 const int kBodyZaSamovrazdu = -20;
 const int kBodyZaPrezitie = 500;
 
